@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>그림으로 말해요 - 모둠형</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #fff8ef; color: #333; font-family: Arial, sans-serif; }
+    body { min-height: 100vh; }
+    .screen { display: none; min-height: 100vh; padding: 16px; }
+    .screen.active { display: block; }
+    .wrap { max-width: 1280px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 18px; padding: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); margin-bottom: 14px; }
+    h1, h2, h3 { margin-top: 0; }
+    button, input, select, textarea { font: inherit; }
+    input, select, textarea {
+      width: 100%; padding: 14px 16px; border-radius: 14px; border: 2px solid #ddd; margin-bottom: 10px;
+    }
+    textarea { min-height: 96px; resize: vertical; }
+    button { border: none; border-radius: 14px; padding: 14px 18px; cursor: pointer; font-weight: 700; }
+    .btn-primary { background: #ff6b35; color: white; }
+    .btn-secondary { background: #4ecdc4; color: white; }
+    .btn-gray { background: #eee; color: #444; }
+    .btn-green { background: #41b883; color: white; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .role-buttons { display: grid; gap: 10px; max-width: 460px; }
+    .room-code { font-size: 38px; letter-spacing: 6px; font-weight: 800; text-align: center; color: #ff6b35; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { background: #f1f1f1; border-radius: 999px; padding: 8px 12px; font-size: 14px; }
+    .chip.me { background: #ff6b35; color: #fff; }
+    .group-box { border: 2px dashed #ddd; border-radius: 16px; padding: 12px; background: #fffdf9; }
+    .game-layout { display: grid; grid-template-columns: 1.65fr 1fr; gap: 14px; align-items: start; }
+    canvas { width: 100%; background: white; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); touch-action: none; min-height: 420px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+    .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; }
+    .color-dot.active { border-color: #222; }
+    .chat-box { height: 360px; overflow: auto; background: white; border-radius: 14px; padding: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .msg { margin-bottom: 8px; line-height: 1.4; }
+    .msg .name { font-weight: 700; color: #ff6b35; }
+    .msg.system { color: #777; font-style: italic; }
+    .msg.correct { background: #eaffea; border-radius: 10px; padding: 6px 8px; }
+    .answer-row { display: flex; gap: 8px; margin-top: 10px; }
+    .answer-row input { margin-bottom: 0; }
+    .score-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .score-item { background: #f1f1f1; padding: 6px 10px; border-radius: 10px; font-size: 14px; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .stat { background: #fff; border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .stat .num { font-size: 30px; font-weight: 800; color: #ff6b35; }
+    .banner { background: #fff3ee; border: 2px solid #ff6b35; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+    .hidden { display: none !important; }
+    .small { font-size: 13px; color: #666; }
+    .warning { color: #c0392b; font-weight: 700; }
+    .result-item { display: flex; justify-content: space-between; background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .footer-credit { text-align: center; font-size: 13px; color: #777; padding: 18px 0 8px; }
+    .landscape-hint { font-size: 12px; color: #666; margin-top: 8px; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+    .overlay.hidden { display: none; }
+    .modal { background: white; width: min(680px, 100%); border-radius: 18px; padding: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.22); }
+    .modal h3 { margin-top: 0; margin-bottom: 12px; color: #ff6b35; }
+    .modal p { margin: 0 0 10px; line-height: 1.55; }
+    .countdown { font-size: 28px; font-weight: 800; color: #ff6b35; text-align: center; margin-top: 8px; }
+    .badge-line { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .badge-card { background: #fff3ee; border: 2px solid #ff6b35; border-radius: 14px; padding: 10px 12px; flex: 1; min-width: 180px; }
+
+
+    .center-popup { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10000; background: white; border: 4px solid #ff6b35; border-radius: 22px; padding: 26px 30px; min-width: 280px; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.24); }
+    .center-popup.hidden { display: none; }
+    .center-popup .big { font-size: 34px; font-weight: 800; color: #ff6b35; margin-bottom: 8px; }
+    .center-popup .sub { font-size: 18px; color: #444; }
+    .manual-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+
+    @media (max-width: 1100px) {
+      .game-layout { grid-template-columns: 1.45fr 1fr; }
+      canvas { min-height: 360px; }
+    }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4, .game-layout, .stats { grid-template-columns: 1fr; }
+      .chat-box { height: 220px; }
+      canvas { min-height: 320px; }
+    }
+    @media (orientation: landscape) and (max-width: 1366px) {
+      .screen { padding: 10px; }
+      .wrap { max-width: 100%; }
+      .card { padding: 14px; margin-bottom: 10px; }
+      .game-layout { grid-template-columns: 1.8fr 1fr; gap: 10px; }
+      .chat-box { height: 280px; }
+      canvas { min-height: 340px; }
+      button, input, select, textarea { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section class="screen active" id="screenLobby">
+      <div class="wrap">
+        <div class="card" style="text-align:center; padding:40px 20px;">
+          <h1>🎨 그림으로 말해요</h1>
+          <p>모둠형 캐치마인드 수업 웹앱</p>
+          <div class="role-buttons" style="margin:20px auto 0;">
+            <button class="btn-primary" onclick="selectRole('teacher')">👩‍🏫 교사(관리자)로 시작</button>
+            <button class="btn-secondary" onclick="selectRole('student')">🧒 학생으로 참여</button>
+          </div>
+        </div>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenTeacherHome">
+      <div class="wrap">
+        <h2>교사 관리자 설정</h2>
+        <div class="stats" style="margin-bottom:16px;">
+          <div class="stat"><div class="num" id="statTotal">-</div><div>누적 사용자</div></div>
+          <div class="stat"><div class="num" id="statToday">-</div><div>오늘 접속자</div></div>
+          <div class="stat"><div class="num" id="statOnline">-</div><div>현재 접속자</div></div>
+        </div>
+        <div class="card">
+          <div class="grid-2">
+            <div>
+              <label>선생님 이름</label>
+              <input id="teacherName" maxlength="12" placeholder="예: 민영쌤" />
+            </div>
+            <div>
+              <label>모둠 수</label>
+              <input id="groupCount" type="number" min="1" max="20" value="1" />
+            </div>
+            <div>
+              <label>라운드 수</label>
+              <input id="roundCount" type="number" min="1" max="50" value="5" />
+            </div>
+            <div>
+              <label>라운드 시간</label>
+              <select id="timeLimit">
+                <option value="180">3분</option>
+                <option value="240">4분</option>
+                <option value="300">5분</option>
+              </select>
+            </div>
+            <div>
+              <label>모둠 배치 방식</label>
+              <select id="groupMode" onchange="toggleManualMode()">
+                <option value="auto">자동 배치</option>
+                <option value="maxPerGroup">모둠당 인원 기준</option>
+                <option value="manual">수동 배정</option>
+              </select>
+            </div>
+            <div>
+              <label>모둠당 최대 인원</label>
+              <input id="maxPerGroup" type="number" min="1" max="20" value="4" />
+            </div>
+          </div>
+          <label>정답 단어 목록 (쉼표 또는 줄바꿈 구분)</label>
+          <textarea id="wordInput" placeholder="사과, 고양이, 학교"></textarea>
+          <div class="small">자동 배치면 학생이 들어올 때 차이가 1 이하가 되게 고르게 분배돼. 수동 배정을 선택하면 대기실에서 학생을 원하는 모둠으로 직접 옮길 수 있어.</div>
+          <div class="small warning">해킹 방지는 웹앱 링크만으로 100% 해결되지 않아. 핵심은 Firebase 보안 규칙, 인증, 입력 검증이야.</div>
+          <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+            <button class="btn-primary" onclick="createRoom()">방 만들기</button>
+            <button class="btn-gray" onclick="showScreen('screenLobby')">뒤로</button>
+          </div>
+        </div>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenStudentHome">
+      <div class="wrap">
+        <h2>학생 참여</h2>
+        <div class="card">
+          <input id="studentName" maxlength="12" placeholder="이름" />
+          <input id="roomCodeInput" maxlength="8" placeholder="방 코드" style="text-transform:uppercase; letter-spacing:4px; text-align:center;" />
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-secondary" onclick="joinRoom()">참여하기</button>
+            <button class="btn-gray" onclick="showScreen('screenLobby')">뒤로</button>
+          </div>
+          <div class="landscape-hint">태블릿은 가로 모드가 가장 편해.</div>
+        </div>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenWaiting">
+      <div class="wrap">
+        <h2>대기실</h2>
+        <div class="card">
+          <div class="room-code" id="waitingRoomCode">----</div>
+          <p class="small" style="text-align:center;">이 코드를 학생들에게 알려주세요.</p>
+          <div id="groupListWrap"></div>
+          <div id="manualAssignWrap" class="card hidden" style="margin-top:10px;">
+            <h3 style="margin-bottom:10px;">수동 배정</h3>
+            <div class="small">학생을 선택하고 옮길 모둠을 고른 뒤 이동 버튼을 누르세요.</div>
+            <div class="manual-row">
+              <select id="manualStudentSelect"></select>
+              <select id="manualTargetGroupSelect"></select>
+              <button class="btn-secondary" onclick="moveStudentGroup()">이동</button>
+            </div>
+          </div>
+          <p id="waitingStatus"></p>
+          <div id="teacherWaitControls" class="hidden">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-gray" id="lockGroupsBtn" onclick="toggleGroupLock()">모둠 잠금 OFF</button>
+              <button class="btn-green" id="startBtn" onclick="startGame()">게임 시작</button>
+            </div>
+          </div>
+          <div style="margin-top:12px;"><button class="btn-gray" onclick="backToLobby()">처음으로</button></div>
+        </div>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenGame">
+      <div class="wrap">
+        <div class="card">
+          <div class="grid-4">
+            <div><strong>라운드</strong> <span id="curRound">1</span> / <span id="totalRound">1</span></div>
+            <div><strong>모둠</strong> <span id="curGroupName">1모둠</span></div>
+            <div><strong>남은 시간</strong> <span id="timerDisplay">0</span></div>
+            <div><strong>방 코드</strong> <span id="gameRoomCode">----</span></div>
+          </div>
+          <div class="score-list" id="scoreBoard" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="game-layout">
+          <div>
+            <div class="banner">
+              <div><strong>현재 출제자:</strong> <span id="drawerNameDisplay">-</span></div>
+              <div id="wordBanner" class="hidden" style="margin-top:8px;"><strong>제시어:</strong> <span id="keywordDisplay"></span></div>
+              <div id="groupRotationInfo" class="small" style="margin-top:8px;"></div>
+            </div>
+            <canvas id="drawCanvas" width="900" height="540"></canvas>
+            <div class="toolbar" id="toolBox">
+              <div id="colorPalette" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+              <button class="btn-gray" id="undoBtn" onclick="undoCanvas()">뒤로 가기</button>
+              <button class="btn-gray" id="eraserBtn" onclick="toggleEraser()">지우개</button>
+              <button class="btn-gray" onclick="toggleSound()" id="soundBtn">효과음 ON</button>
+              <button class="btn-gray" onclick="clearCanvas()">전체 지우기</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="chat-box" id="chatBox"></div>
+            <div id="drawerNotice" class="card hidden" style="margin-top:10px; text-align:center;">지금은 네가 그림을 그릴 차례야 ✏️</div>
+            <div id="answerWrap" class="card" style="margin-top:10px;">
+              <div class="answer-row">
+                <input id="answerInput" maxlength="40" placeholder="정답 입력" onkeydown="if(event.key==='Enter') submitAnswer()" />
+                <button class="btn-primary" onclick="submitAnswer()">전송</button>
+              </div>
+              <div class="small">욕설/성적 표현, 초성 변형 일부, 영어 욕설 일부는 차단돼.</div>
+            </div>
+            <div id="teacherOverview" class="card hidden" style="margin-top:10px;">
+              <h3 style="margin-bottom:10px;">교사 관리자 진행 현황</h3>
+              <div id="teacherOverviewContent" class="small"></div>
+            </div>
+            <div id="teacherGameControls" class="card hidden" style="margin-top:10px;">
+              <button class="btn-secondary" onclick="nextRound()">다음 라운드</button>
+            </div>
+          </div>
+        </div>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenResult">
+      <div class="wrap">
+        <h2>최종 결과</h2>
+        <div id="resultList"></div>
+        <button class="btn-primary" onclick="backToLobby()">처음으로</button>
+        <div class="footer-credit">Created by. 민프피</div>
+      </div>
+    </section>
+  </div>
+
+    <div class="overlay hidden" id="rulesOverlay">
+      <div class="modal">
+        <h3>게임 규칙 안내</h3>
+        <p>1. 출제자는 그림으로만 제시어를 설명해요.</p>
+        <p>2. 다른 학생들은 정답을 입력해 맞혀요.</p>
+        <p>3. 정답이나 시간 종료 후 자동으로 다음 라운드로 넘어가요.</p>
+        <div class="countdown"><span id="rulesCountdown">20</span>초 후 시작</div>
+      </div>
+    </div>
+
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+    import {
+      getDatabase, ref, set, get, update, onValue, off, push, remove,
+      onDisconnect, runTransaction
+    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyCO6d8xemPjvrd4_twdiouZ4vG-AlFiexo',
+      authDomain: 'drawdrawonthewall.firebaseapp.com',
+      databaseURL: 'https://drawdrawonthewall-default-rtdb.asia-southeast1.firebasedatabase.app',
+      projectId: 'drawdrawonthewall',
+      storageBucket: 'drawdrawonthewall.firebasestorage.app',
+      messagingSenderId: '843622460328',
+      appId: '1:843622460328:web:64e4cb2c8760a9e00d8b9d'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    const COLORS = ['#222222', '#e63946', '#ff6b35', '#f4a261', '#f4d35e', '#2a9d8f', '#457b9d', '#9b5de5'];
+    const DEFAULT_WORDS = ['사과', '고양이', '학교', '축구공', '비행기', '나비', '수박', '로봇'];
+
+    const BANNED_PATTERNS = [
+      /씨발|시발|쉬발|쉬벌|시벌|십팔|ㅅㅂ|ㅆㅂ|ㅅ\s*ㅂ/i,
+      /병신|븅신|ㅂㅅ|ㅂ\s*ㅅ/i,
+      /미친|ㅁㅊ|ㅁ\s*ㅊ|지랄|염병|개새|꺼져|존나|좆|좇/i,
+      /섹스|ㅅㅅ|성기|자지|보지|야동|포르노|딸딸|음경|질|애무|가슴빨/i,
+      /fuck|f\s*u\s*c\s*k|shit|bitch|sex|porn|dick|pussy/i,
+      /보\s*지|자\s*지|씨\s*발|시\s*발|병\s*신/i,
+      /[ㅂㅈ]{2,}|[ㅈㄹ]{2,}|[ㅅㅂ]{2,}/i
+    ];
+
+    let myId = '';
+
+
+    let myName = '';
+    let myRole = '';
+    let roomCode = '';
+    let roomRef, playersRef, gameRef, chatRef, canvasRef, groupsRef, settingsRef;
+    let timerInterval = null;
+    let listeners = {};
+    let canvasEventsBound = false;
+    let isDrawer = false;
+    let drawing = false;
+    let erasing = false;
+    let brushSize = 8;
+    let brushColor = COLORS[0];
+    let undoStack = [];
+    let nextRoundScheduled = false;
+    let lastCelebrationKey = '';
+    let currentRoundSeen = 0;
+    let rulesCountdownTimer = null;
+    let audioCtx = null;
+    let soundEnabled = true;
+    let rulesShownForRoom = false;
+    let lastRestoredStatus = '';
+
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+
+    window.selectRole = selectRole;
+    window.showScreen = showScreen;
+    window.createRoom = createRoom;
+    window.joinRoom = joinRoom;
+    window.startGame = startGame;
+    window.nextRound = nextRound;
+    window.submitAnswer = submitAnswer;
+    window.backToLobby = backToLobby;
+    window.clearCanvas = clearCanvas;
+    window.toggleEraser = toggleEraser;
+    window.setSize = setSize;
+    window.undoCanvas = undoCanvas;
+    window.toggleManualMode = toggleManualMode;
+    window.moveStudentGroup = moveStudentGroup;
+    window.toggleSound = toggleSound;
+    window.toggleGroupLock = toggleGroupLock;
+
+    async function ensureAnonymousAuth() {
+      try {
+        if (!auth.currentUser) {
+          await signInAnonymously(auth);
+        }
+        myId = auth.currentUser?.uid || '';
+        console.log('익명 로그인 완료:', myId);
+      } catch (error) {
+        console.error('익명 로그인 실패:', error);
+        alert('익명 로그인에 실패했어. Firebase Authentication > Anonymous 설정을 확인해줘.');
+      }
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function toast(msg) { alert(msg); }
+    function todayKey() { return new Date().toISOString().slice(0, 10).replace(/-/g, ''); }
+
+
+    function showCenterPopup(title, sub, ms = 2200) {
+      const popup = document.getElementById('centerPopup');
+      document.getElementById('centerPopupTitle').textContent = title;
+      document.getElementById('centerPopupSub').textContent = sub;
+      popup.classList.remove('hidden');
+      setTimeout(() => popup.classList.add('hidden'), ms);
+    }
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    }
+
+    function playTone(freq = 660, duration = 0.12, type = 'sine', gainValue = 0.05) {
+      if (!soundEnabled) return;
+      try {
+        ensureAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.value = gainValue;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.error('sound failed', e);
+      }
+    }
+
+    function playCorrectSound() {
+      playTone(660, 0.08, 'triangle', 0.04);
+      setTimeout(() => playTone(880, 0.1, 'triangle', 0.04), 90);
+      setTimeout(() => playTone(1040, 0.12, 'triangle', 0.04), 200);
+    }
+
+    function playFailSound() {
+      playTone(320, 0.14, 'sawtooth', 0.035);
+      setTimeout(() => playTone(250, 0.18, 'sawtooth', 0.035), 120);
+    }
+
+    function toggleManualMode() {
+      const mode = document.getElementById('groupMode')?.value;
+      const wrap = document.getElementById('manualAssignWrap');
+      if (!wrap) return;
+      wrap.classList.toggle('hidden', mode !== 'manual');
+    }
+
+    async function moveStudentGroup() {
+      if (myRole !== 'teacher') return;
+      const studentUid = document.getElementById('manualStudentSelect').value;
+      const targetGroupKey = document.getElementById('manualTargetGroupSelect').value;
+      if (!studentUid || !targetGroupKey) return;
+
+      const groupsSnap = await get(groupsRef);
+      const groups = groupsSnap.val() || {};
+      Object.values(groups).forEach(group => {
+        group.members = (group.members || []).filter(uid => uid !== studentUid);
+      });
+      if (!groups[targetGroupKey]) return;
+      groups[targetGroupKey].members = [...(groups[targetGroupKey].members || []), studentUid];
+      await set(groupsRef, groups);
+    }
+
+    function renderManualSelectors(players, groups) {
+      const studentSel = document.getElementById('manualStudentSelect');
+      const targetSel = document.getElementById('manualTargetGroupSelect');
+      if (!studentSel || !targetSel) return;
+      const students = Object.entries(players).filter(([, p]) => p.role === 'student');
+      studentSel.innerHTML = students.map(([uid, p]) => `<option value="${uid}">${p.name}</option>`).join('');
+      targetSel.innerHTML = Object.entries(groups).map(([key, g]) => `<option value="${key}">${g.name}</option>`).join('');
+    }
+
+
+
+    async function toggleGroupLock() {
+      if (myRole !== 'teacher') return;
+      const settingsSnap = await get(settingsRef);
+      const settings = settingsSnap.val() || {};
+      const locked = !!settings.groupLocked;
+      await update(settingsRef, { groupLocked: !locked });
+    }
+
+    function showRulesOverlay() {
+      const overlay = document.getElementById('rulesOverlay');
+      const countEl = document.getElementById('rulesCountdown');
+      let left = 20;
+      countEl.textContent = left;
+      overlay.classList.remove('hidden');
+      rulesShownForRoom = true;
+      if (rulesCountdownTimer) clearInterval(rulesCountdownTimer);
+      rulesCountdownTimer = setInterval(() => {
+        left -= 1;
+        countEl.textContent = left;
+        if (left <= 0) {
+          clearInterval(rulesCountdownTimer);
+          overlay.classList.add('hidden');
+        }
+      }, 1000);
+    }
+
+    function getPlayerGroupKey(groups, uid) {
+      for (const [groupKey, group] of Object.entries(groups || {})) {
+        if ((group.members || []).includes(uid)) return groupKey;
+      }
+      return '';
+    }
+
+    function buildPersonalAwards(players) {
+      const arr = Object.entries(players || {}).filter(([, p]) => p.role === 'student');
+      if (!arr.length) return [];
+      const byScore = [...arr].sort((a, b) => (b[1].score || 0) - (a[1].score || 0));
+      const byCorrect = [...arr].sort((a, b) => (b[1].correctCount || 0) - (a[1].correctCount || 0));
+      const byDraw = [...arr].sort((a, b) => (b[1].drawCount || 0) - (a[1].drawCount || 0));
+      return [
+        { title: '정답왕', name: byCorrect[0]?.[1]?.name || '-', value: `${byCorrect[0]?.[1]?.correctCount || 0}회 정답` },
+        { title: '그림왕', name: byDraw[0]?.[1]?.name || '-', value: `${byDraw[0]?.[1]?.drawCount || 0}회 출제` },
+        { title: '개인 TOP 1', name: byScore[0]?.[1]?.name || '-', value: `${byScore[0]?.[1]?.score || 0}점` }
+      ];
+    }
+
+
+    async function attachPresence(name) {
+      const presRef = ref(db, `presence/${myId}`);
+      await set(presRef, { name, ts: Date.now() });
+      onDisconnect(presRef).remove();
+
+      const userRef = ref(db, `stats/users/${myId}`);
+      const snap = await get(userRef);
+      const user = snap.val();
+      if (!user?.firstSeen) await runTransaction(ref(db, 'stats/counters/totalUsers'), v => (v || 0) + 1);
+      if (user?.lastDate !== todayKey()) await runTransaction(ref(db, `stats/counters/daily_${todayKey()}`), v => (v || 0) + 1);
+      await update(userRef, { firstSeen: user?.firstSeen || Date.now(), lastDate: todayKey(), name });
+    }
+
+    function loadStats() {
+      addListener('stat_presence', ref(db, 'presence'), snap => {
+        document.getElementById('statOnline').textContent = Object.keys(snap.val() || {}).length;
+      });
+      addListener('stat_counters', ref(db, 'stats/counters'), snap => {
+        const v = snap.val() || {};
+        document.getElementById('statTotal').textContent = v.totalUsers || 0;
+        document.getElementById('statToday').textContent = v[`daily_${todayKey()}`] || 0;
+      });
+    }
+
+    function selectRole(role) {
+      myRole = role;
+      detachAllListeners();
+      if (role === 'teacher') {
+        showScreen('screenTeacherHome');
+        loadStats();
+      } else {
+        showScreen('screenStudentHome');
+        const saved = JSON.parse(localStorage.getItem('gm_session') || 'null');
+        if (saved) {
+          document.getElementById('studentName').value = saved.name || '';
+          document.getElementById('roomCodeInput').value = saved.code || '';
+        }
+      }
+    }
+
+    function initRefs() {
+      roomRef = ref(db, `rooms/${roomCode}`);
+      playersRef = ref(db, `rooms/${roomCode}/players`);
+      gameRef = ref(db, `rooms/${roomCode}/game`);
+      chatRef = ref(db, `rooms/${roomCode}/chat`);
+      canvasRef = ref(db, `rooms/${roomCode}/canvas`);
+      groupsRef = ref(db, `rooms/${roomCode}/groups`);
+      settingsRef = ref(db, `rooms/${roomCode}/settings`);
+    }
+
+    function addListener(key, targetRef, callback) {
+      if (listeners[key]) off(listeners[key].targetRef, 'value', listeners[key].callback);
+      onValue(targetRef, callback);
+      listeners[key] = { targetRef, callback };
+    }
+
+    function detachAllListeners() {
+      Object.values(listeners).forEach(({ targetRef, callback }) => off(targetRef, 'value', callback));
+      listeners = {};
+    }
+
+    async function genUniqueRoomCode() {
+      for (let i = 0; i < 15; i++) {
+        const code = Math.random().toString(36).slice(2, 6).toUpperCase();
+        const snap = await get(ref(db, `rooms/${code}/code`));
+        if (!snap.exists()) return code;
+      }
+      return Math.random().toString(36).slice(2, 8).toUpperCase();
+    }
+
+    function parseWords(raw) {
+      const pieces = raw.split(/[,\n]/).map(v => v.trim()).filter(Boolean);
+      return [...new Set([...pieces, ...DEFAULT_WORDS])];
+    }
+
+    function normalizeForFilter(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/[!@#$%^&*()_+=\-\{\}\[\]:;"'`,.<>\/?\\|~]/g, '')
+        .replace(/\s+/g, '');
+    }
+
+    function sanitizeAnswer(text) { return String(text || '').replace(/\s+/g, ' ').trim(); }
+
+    function containsBannedWord(text) {
+      const normalized = normalizeForFilter(text);
+      return BANNED_PATTERNS.some(rx => rx.test(normalized));
+    }
+
+    async function resolveUniqueName(code, desiredName) {
+      const snap = await get(ref(db, `rooms/${code}/players`));
+      const players = snap.val() || {};
+      const mine = players[myId];
+      if (mine) return mine.name || desiredName;
+      const used = Object.values(players).map(p => p.name);
+      if (!used.includes(desiredName)) return desiredName;
+      let idx = 2;
+      while (used.includes(`${desiredName}${idx}`)) idx++;
+      return `${desiredName}${idx}`;
+    }
+
+    function computeGroupCountByMode(studentCount, inputGroupCount, maxPerGroup, mode) {
+      if (mode === 'maxPerGroup') {
+        return Math.max(1, Math.ceil(studentCount / Math.max(1, maxPerGroup)));
+      }
+      return Math.max(1, inputGroupCount);
+    }
+
+    function distributeStudentsEvenly(studentUids, groupCount) {
+      const groups = {};
+      for (let i = 1; i <= groupCount; i++) groups[`group${i}`] = { name: `${i}모둠`, members: [] };
+      studentUids.forEach((uid, idx) => {
+        const gIndex = idx % groupCount;
+        groups[`group${gIndex + 1}`].members.push(uid);
+      });
+      return groups;
+    }
+
+    function buildGroupsFromPlayers(playerEntries, config) {
+      const students = playerEntries.filter(([, p]) => p.role === 'student').map(([uid]) => uid);
+      const computedGroupCount = computeGroupCountByMode(
+        students.length,
+        config.groupCount || 1,
+        config.maxPerGroup || 4,
+        config.groupMode || 'auto'
+      );
+      return distributeStudentsEvenly(students, computedGroupCount);
+    }
+
+    function getNextDrawerForGroup(group, players, usedSet) {
+      const members = (group?.members || []).filter(uid => players[uid]);
+      if (!members.length) return null;
+      const neverUsedThisGroup = members.filter(uid => !usedSet.includes(uid));
+      const pool = neverUsedThisGroup.length ? neverUsedThisGroup : members;
+      return pool.sort((a, b) => {
+        const da = players[a]?.drawCount || 0;
+        const db = players[b]?.drawCount || 0;
+        if (da !== db) return da - db;
+        return (players[a]?.joinedAt || 0) - (players[b]?.joinedAt || 0);
+      })[0];
+    }
+
+    async function createRoom() {
+      const teacherName = (document.getElementById('teacherName').value || '').trim() || '선생님';
+      const groupCount = Math.max(1, parseInt(document.getElementById('groupCount').value || '1', 10));
+      const roundCount = Math.max(1, parseInt(document.getElementById('roundCount').value || '5', 10));
+      const timeLimit = parseInt(document.getElementById('timeLimit').value, 10);
+      const groupMode = document.getElementById('groupMode').value;
+      const maxPerGroup = Math.max(1, parseInt(document.getElementById('maxPerGroup').value || '4', 10));
+      const words = parseWords(document.getElementById('wordInput').value || '');
+
+      myName = teacherName;
+      myRole = 'teacher';
+      roomCode = await genUniqueRoomCode();
+      initRefs();
+
+      await set(roomRef, { code: roomCode, host: myId, status: 'waiting', createdAt: Date.now() });
+      await set(playersRef, {
+        [myId]: { name: teacherName, role: 'teacher', isManager: true, score: 0, drawCount: 0, joinedAt: Date.now() }
+      });
+
+      const settings = { groupCount, roundCount, timeLimit, words, groupMode, maxPerGroup, groupLocked: false };
+      await set(settingsRef, settings);
+      await set(groupsRef, buildGroupsFromPlayers([[myId, { role: 'teacher' }]], settings));
+      await set(gameRef, {
+        status: 'waiting', round: 0, totalRounds: roundCount, currentGroupIndex: 0,
+        currentGroupKey: 'group1', drawerId: '', keyword: '', timeLimit, timerStart: 0,
+        answeredBy: '', usedWords: [], usedDrawersByGroup: {}, roundOver: false
+      });
+      await set(canvasRef, { data: '', ts: Date.now() });
+      localStorage.setItem('gm_session', JSON.stringify({ code: roomCode, name: myName, role: myRole }));
+      await attachPresence(myName);
+      rulesShownForRoom = false;
+      enterWaiting();
+    }
+
+    async function joinRoom() {
+      const desiredName = (document.getElementById('studentName').value || '').trim();
+      const code = (document.getElementById('roomCodeInput').value || '').trim().toUpperCase();
+      if (!desiredName) return toast('이름을 입력해줘.');
+      if (!code) return toast('방 코드를 입력해줘.');
+      const roomSnap = await get(ref(db, `rooms/${code}`));
+      if (!roomSnap.exists()) return toast('방을 찾을 수 없어.');
+
+      roomCode = code;
+      initRefs();
+      myRole = 'student';
+      myName = await resolveUniqueName(code, desiredName);
+
+      const existingSnap = await get(ref(db, `rooms/${roomCode}/players/${myId}`));
+      if (existingSnap.exists()) {
+        await update(ref(db, `rooms/${roomCode}/players/${myId}`), { name: myName });
+      } else {
+        await set(ref(db, `rooms/${roomCode}/players/${myId}`), {
+          name: myName, role: 'student', score: 0, drawCount: 0, joinedAt: Date.now()
+        });
+      }
+
+      localStorage.setItem('gm_session', JSON.stringify({ code: roomCode, name: myName, role: myRole }));
+      await attachPresence(myName);
+      rulesShownForRoom = false;
+      enterWaiting();
+    }
+
+    async function enterWaiting() {
+      detachAllListeners();
+      showScreen('screenWaiting');
+      document.getElementById('waitingRoomCode').textContent = roomCode;
+      document.getElementById('teacherWaitControls').classList.toggle('hidden', myRole !== 'teacher');
+
+      addListener('waiting_players', playersRef, async playerSnap => {
+        const players = playerSnap.val() || {};
+        const settingsSnap = await get(settingsRef);
+        const settings = settingsSnap.val() || { groupCount: 1, groupMode: 'auto', maxPerGroup: 4, groupLocked: false };
+        let groupsSnap = await get(groupsRef);
+        let groups = groupsSnap.val() || {};
+        const students = Object.entries(players).filter(([, p]) => p.role === 'student').map(([uid]) => uid);
+
+        if (!settings.groupLocked) {
+          if (settings.groupMode === 'manual') {
+            const desiredCount = Math.max(1, settings.groupCount || 1);
+            if (!Object.keys(groups).length) {
+              groups = {};
+              for (let i = 1; i <= desiredCount; i++) groups[`group${i}`] = { name: `${i}모둠`, members: [] };
+            }
+            const assigned = new Set(Object.values(groups).flatMap(g => g.members || []));
+            for (const uid of students) {
+              if (!assigned.has(uid)) {
+                const targetKey = Object.keys(groups).sort((a, b) => (groups[a].members?.length || 0) - (groups[b].members?.length || 0))[0];
+                groups[targetKey].members = [...(groups[targetKey].members || []), uid];
+              }
+            }
+            Object.values(groups).forEach(group => {
+              group.members = (group.members || []).filter(uid => students.includes(uid));
+            });
+            await set(groupsRef, groups);
+          } else {
+            groups = buildGroupsFromPlayers(Object.entries(players), settings);
+            await set(groupsRef, groups);
+          }
+        } else {
+          if (!Object.keys(groups).length) {
+            groups = buildGroupsFromPlayers(Object.entries(players), settings);
+            await set(groupsRef, groups);
+          } else {
+            Object.values(groups).forEach(group => {
+              group.members = (group.members || []).filter(uid => students.includes(uid));
+            });
+            const alreadyAssigned = new Set(Object.values(groups).flatMap(g => g.members || []));
+            for (const uid of students) {
+              if (!alreadyAssigned.has(uid)) {
+                const targetKey = Object.keys(groups).sort((a, b) => (groups[a].members?.length || 0) - (groups[b].members?.length || 0))[0];
+                groups[targetKey].members = [...(groups[targetKey].members || []), uid];
+              }
+            }
+            await set(groupsRef, groups);
+          }
+        }
+
+        renderGroups(players, groups);
+        renderManualSelectors(players, groups);
+        document.getElementById('manualAssignWrap').classList.toggle('hidden', !(myRole === 'teacher' && settings.groupMode === 'manual' && !settings.groupLocked));
+        const lockBtn = document.getElementById('lockGroupsBtn');
+        if (lockBtn) lockBtn.textContent = settings.groupLocked ? '모둠 잠금 ON' : '모둠 잠금 OFF';
+        const studentCount = Object.values(players).filter(p => p.role === 'student').length;
+        document.getElementById('waitingStatus').textContent = `현재 학생 ${studentCount}명 접속 중${settings.groupLocked ? ' · 모둠 고정됨' : ''}`;
+        document.getElementById('startBtn').disabled = studentCount < 1;
+      });
+
+      addListener('waiting_game', gameRef, snap => {
+        const g = snap.val();
+        if (!g) return;
+        if (g.status === 'playing') enterGame();
+        if (g.status === 'result') showResult();
+      });
+    }
+
+    function renderGroups(players, groups) {
+      const wrap = document.getElementById('groupListWrap');
+      wrap.innerHTML = '';
+      Object.values(groups || {}).forEach(group => {
+        const box = document.createElement('div');
+        box.className = 'group-box';
+        box.innerHTML = `<h3>${group.name}</h3>`;
+        const chips = document.createElement('div');
+        chips.className = 'chips';
+        (group.members || []).forEach(uid => {
+          const chip = document.createElement('div');
+          chip.className = 'chip' + (uid === myId ? ' me' : '');
+          chip.textContent = players[uid]?.name || uid;
+          chips.appendChild(chip);
+        });
+        if (!group.members?.length) box.innerHTML += `<div class="small">아직 배정된 학생이 없어.</div>`;
+        box.appendChild(chips);
+        wrap.appendChild(box);
+      });
+    }
+
+    async function startGame() {
+      const [playersSnap, settingsSnap, groupsSnap] = await Promise.all([get(playersRef), get(settingsRef), get(groupsRef)]);
+      const players = playersSnap.val() || {};
+      const settings = settingsSnap.val() || {};
+      const groups = groupsSnap.val() || {};
+      const groupKeys = Object.keys(groups);
+      if (!groupKeys.length) return toast('모둠 정보가 없어.');
+      const currentGroupKey = groupKeys[0];
+      const drawerId = getNextDrawerForGroup(groups[currentGroupKey], players, []);
+      const keyword = (settings.words || DEFAULT_WORDS)[0] || DEFAULT_WORDS[0];
+
+      await update(gameRef, {
+        status: 'playing', round: 1, totalRounds: settings.roundCount,
+        currentGroupIndex: 0, currentGroupKey, drawerId, keyword,
+        timeLimit: settings.timeLimit, timerStart: Date.now(), answeredBy: '',
+        usedWords: [keyword], usedDrawersByGroup: { [currentGroupKey]: drawerId ? [drawerId] : [] }, roundOver: false
+      });
+      if (drawerId) await runTransaction(ref(db, `rooms/${roomCode}/players/${drawerId}/drawCount`), v => (v || 0) + 1);
+      await set(canvasRef, { data: '', ts: Date.now() });
+      await remove(chatRef);
+      lastCelebrationKey = '';
+      currentRoundSeen = 0;
+    }
+
+    function enterGame() {
+      detachAllListeners();
+      showScreen('screenGame');
+      document.getElementById('gameRoomCode').textContent = roomCode;
+      setupCanvas();
+      if (myRole === 'teacher') {
+        const overlay = document.getElementById('rulesOverlay');
+        overlay.classList.add('hidden');
+      }
+
+      addListener('game_state', gameRef, async snap => {
+        const g = snap.val();
+        if (!g) return;
+        if (g.status === 'result') return showResult();
+
+        const [playersSnap, groupsSnap] = await Promise.all([get(playersRef), get(groupsRef)]);
+        const players = playersSnap.val() || {};
+        const groups = groupsSnap.val() || {};
+        const group = groups[g.currentGroupKey] || { name: '-', members: [] };
+
+        isDrawer = g.drawerId === myId;
+        document.getElementById('curRound').textContent = g.round || 0;
+        document.getElementById('totalRound').textContent = g.totalRounds || 0;
+        document.getElementById('curGroupName').textContent = group.name || '-';
+        document.getElementById('drawerNameDisplay').textContent = players[g.drawerId]?.name || '-';
+        document.getElementById('keywordDisplay').textContent = isDrawer ? (g.keyword || '') : '비밀';
+        document.getElementById('wordBanner').classList.toggle('hidden', !isDrawer);
+        document.getElementById('drawerNotice').classList.toggle('hidden', !isDrawer);
+        document.getElementById('answerWrap').classList.toggle('hidden', isDrawer);
+        document.getElementById('teacherGameControls').classList.toggle('hidden', myRole !== 'teacher');
+        document.getElementById('teacherOverview').classList.toggle('hidden', myRole !== 'teacher');
+        document.getElementById('groupRotationInfo').textContent = `${group.name} 안에서 아직 덜 한 사람부터 출제 중`;
+
+        if (g.round !== currentRoundSeen) {
+          currentRoundSeen = g.round || 0;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          undoStack = [];
+        }
+
+        const scoreBoard = document.getElementById('scoreBoard');
+        scoreBoard.innerHTML = '';
+        Object.entries(players).filter(([, p]) => p.role === 'student').forEach(([uid, p]) => {
+          const item = document.createElement('div');
+          item.className = 'score-item';
+          item.textContent = `${p.name}: ${p.score || 0}점 / 출제 ${p.drawCount || 0}회`;
+          scoreBoard.appendChild(item);
+        });
+
+        if (myRole === 'teacher') {
+          const overview = document.getElementById('teacherOverviewContent');
+          const groupLines = Object.entries(groups).map(([groupKey, gp], idx) => {
+            const members = (gp.members || []).map(uid => players[uid]?.name || uid).join(', ') || '없음';
+            const state = groupKey === g.currentGroupKey ? '진행 중' : '대기';
+            const score = (gp.members || []).reduce((sum, uid) => sum + (players[uid]?.score || 0), 0);
+            return `<div style="margin-bottom:8px;"><strong>${gp.name}</strong> · ${state} · ${score}점<br>학생 ${gp.members?.length || 0}명<br>${members}</div>`;
+          }).join('');
+          overview.innerHTML = `<div style="margin-bottom:8px;"><strong>현재 라운드:</strong> ${g.round || 0} / ${g.totalRounds || 0}</div>${groupLines}`;
+        }
+
+        if (g.round === 1 && !g.roundOver && !rulesShownForRoom) {
+          showRulesOverlay();
+        }
+
+        const celebrationKey = `${g.round}-${g.answeredBy || ''}`;
+        if (g.roundOver && g.answeredBy && lastCelebrationKey !== celebrationKey) {
+          lastCelebrationKey = celebrationKey;
+          const winnerName = players[g.answeredBy]?.name || '어떤 학생';
+          showCenterPopup('정답!', `${winnerName} 학생이 맞혔어요 · 5초 뒤 다음 라운드`, 3000);
+          playCorrectSound();
+        }
+
+        if (myRole === 'teacher' && g.roundOver && g.answeredBy && !nextRoundScheduled) {
+          nextRoundScheduled = true;
+          setTimeout(async () => {
+            nextRoundScheduled = false;
+            const latest = await get(gameRef);
+            const latestGame = latest.val();
+            if (latestGame && latestGame.roundOver && latestGame.answeredBy) {
+              await nextRound();
+            }
+          }, 5000);
+        }
+
+        startTimer(g.timerStart, g.timeLimit, g.roundOver);
+      });
+
+      addListener('game_chat', chatRef, async snap => {
+        const box = document.getElementById('chatBox');
+        box.innerHTML = '';
+        const msgs = snap.val() || {};
+        const msgList = Object.entries(msgs).map(([id, msg]) => ({ id, ...msg })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+        msgList.forEach(msg => {
+          const div = document.createElement('div');
+          div.className = 'msg' + (msg.system ? ' system' : '') + (msg.correct ? ' correct' : '');
+          if (msg.system) div.textContent = msg.text;
+          else div.innerHTML = `<span class="name">${msg.name}</span>: ${msg.text}`;
+          box.appendChild(div);
+        });
+        box.scrollTop = box.scrollHeight;
+
+        if (myRole === 'teacher') {
+          await processCorrectAnswerFromChat(msgList);
+        }
+      });
+
+      addListener('game_canvas', canvasRef, snap => {
+        if (isDrawer) return;
+        const data = snap.val();
+        if (!data?.data) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+        const img = new Image();
+        img.onload = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0); };
+        img.src = data.data;
+      });
+    }
+
+    async function processCorrectAnswerFromChat(msgList) {
+      const gameSnap = await get(gameRef);
+      const g = gameSnap.val();
+      if (!g || g.roundOver || !g.keyword) return;
+
+      const candidate = msgList.find(msg =>
+        !msg.system &&
+        (msg.round === g.round) &&
+        String(msg.text || '').toLowerCase() === String(g.keyword || '').toLowerCase()
+      );
+      if (!candidate) return;
+
+      const answerRef = ref(db, `rooms/${roomCode}/game/answeredBy`);
+      let won = false;
+      await runTransaction(answerRef, current => {
+        if (!current) { won = true; return candidate.uid || ''; }
+        return current;
+      });
+      if (!won) return;
+
+      await Promise.all([
+        runTransaction(ref(db, `rooms/${roomCode}/players/${candidate.uid}/score`), v => (v || 0) + 10),
+        runTransaction(ref(db, `rooms/${roomCode}/players/${candidate.uid}/correctCount`), v => (v || 0) + 1),
+        runTransaction(ref(db, `rooms/${roomCode}/players/${g.drawerId}/score`), v => (v || 0) + 5),
+        update(gameRef, { roundOver: true }),
+        update(ref(db, `rooms/${roomCode}/chat/${candidate.id}`), { correct: true }),
+        addSystemChat(`정답입니다! ${candidate.name} +10점 / 출제자 +5점`)
+      ]);
+    }
+
+    function startTimer(startTs, limit, roundOver) {
+      if (timerInterval) clearInterval(timerInterval);
+      const display = document.getElementById('timerDisplay');
+      if (roundOver) { display.textContent = '정답!'; return; }
+      timerInterval = setInterval(async () => {
+        const remain = Math.max(0, limit - Math.floor((Date.now() - startTs) / 1000));
+        const m = Math.floor(remain / 60).toString().padStart(2, '0');
+        const s = (remain % 60).toString().padStart(2, '0');
+        display.textContent = `${m}:${s}`;
+        if (remain === 0) {
+          clearInterval(timerInterval);
+          if (myRole === 'teacher') {
+            const gameSnap = await get(gameRef);
+            const g = gameSnap.val();
+            if (g && !g.roundOver) {
+              showCenterPopup('아쉽게 실패!', `정답은 "${g.keyword}" · 다음 라운드로 이동`, 3000);
+              playFailSound();
+              await addSystemChat(`⏰ 시간 종료! 정답은 "${g.keyword}"`);
+              setTimeout(async () => { await nextRound(); }, 3000);
+            }
+          }
+        }
+      }, 500);
+    }
+
+    async function addSystemChat(text) { await push(chatRef, { system: true, text, ts: Date.now() }); }
+
+    async function submitAnswer() {
+      const input = document.getElementById('answerInput');
+      const raw = input.value;
+      const answer = sanitizeAnswer(raw);
+      input.value = '';
+      if (!answer || isDrawer) return;
+      if (containsBannedWord(answer)) return toast('이 표현은 입력할 수 없어.');
+
+      const gameSnap = await get(gameRef);
+      const g = gameSnap.val();
+      if (!g || g.roundOver) return;
+
+      await push(chatRef, {
+        uid: myId,
+        name: myName,
+        text: answer,
+        ts: Date.now(),
+        round: g.round
+      });
+    }
+
+    async function nextRound() {
+      const [gameSnap, settingsSnap, groupsSnap, playersSnap] = await Promise.all([get(gameRef), get(settingsRef), get(groupsRef), get(playersRef)]);
+      const g = gameSnap.val();
+      const settings = settingsSnap.val() || {};
+      const groups = groupsSnap.val() || {};
+      const players = playersSnap.val() || {};
+      if (!g) return;
+      if (g.round >= g.totalRounds) { await update(gameRef, { status: 'result' }); return; }
+
+      const groupKeys = Object.keys(groups);
+      const nextGroupIndex = (g.currentGroupIndex + 1) % Math.max(groupKeys.length, 1);
+      const nextGroupKey = groupKeys[nextGroupIndex];
+      const usedByGroup = g.usedDrawersByGroup || {};
+      const usedSet = usedByGroup[nextGroupKey] || [];
+      const nextDrawer = getNextDrawerForGroup(groups[nextGroupKey], players, usedSet);
+      const usedWords = g.usedWords || [];
+      const wordPool = (settings.words || DEFAULT_WORDS).filter(w => !usedWords.includes(w));
+      const actualPool = wordPool.length ? wordPool : (settings.words || DEFAULT_WORDS);
+      const nextWord = actualPool[Math.floor(Math.random() * actualPool.length)];
+
+      await update(gameRef, {
+        round: g.round + 1,
+        currentGroupIndex: nextGroupIndex,
+        currentGroupKey: nextGroupKey,
+        drawerId: nextDrawer || '',
+        keyword: nextWord,
+        timerStart: Date.now(),
+        answeredBy: '',
+        roundOver: false,
+        usedWords: [...usedWords, nextWord],
+        usedDrawersByGroup: { ...usedByGroup, [nextGroupKey]: nextDrawer ? [...usedSet, nextDrawer] : usedSet }
+      });
+      if (nextDrawer) await runTransaction(ref(db, `rooms/${roomCode}/players/${nextDrawer}/drawCount`), v => (v || 0) + 1);
+      await set(canvasRef, { data: '', ts: Date.now() });
+      await remove(chatRef);
+      lastCelebrationKey = '';
+    }
+
+    function setupCanvas() {
+      if (canvasEventsBound) return;
+      canvasEventsBound = true;
+      renderPalette();
+      let lastX = 0, lastY = 0;
+      const pos = e => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const src = e.touches ? e.touches[0] : e;
+        return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+      };
+      const start = e => {
+        if (!isDrawer) return;
+        e.preventDefault();
+        saveUndoState();
+        drawing = true;
+        const p = pos(e); lastX = p.x; lastY = p.y;
+      };
+      const move = e => {
+        if (!drawing || !isDrawer) return;
+        e.preventDefault(); const p = pos(e);
+        ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y);
+        ctx.strokeStyle = erasing ? '#ffffff' : brushColor;
+        ctx.lineWidth = erasing ? brushSize * 3 : brushSize;
+        ctx.lineCap = 'round'; ctx.stroke();
+        lastX = p.x; lastY = p.y;
+        if (!window.__canvasThrottle) {
+          window.__canvasThrottle = setTimeout(() => {
+            set(canvasRef, { data: canvas.toDataURL(), ts: Date.now() });
+            window.__canvasThrottle = null;
+          }, 100);
+        }
+      };
+      const end = () => { drawing = false; };
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      canvas.addEventListener('mouseup', end);
+      canvas.addEventListener('mouseleave', end);
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      canvas.addEventListener('touchend', end);
+    }
+
+    function renderPalette() {
+      const palette = document.getElementById('colorPalette');
+      palette.innerHTML = '';
+      COLORS.forEach(color => {
+        const dot = document.createElement('div');
+        dot.className = 'color-dot' + (color === brushColor ? ' active' : '');
+        dot.style.background = color;
+        dot.onclick = () => { brushColor = color; erasing = false; renderPalette(); };
+        palette.appendChild(dot);
+      });
+    }
+
+    function saveUndoState() {
+      try {
+        undoStack.push(canvas.toDataURL());
+        if (undoStack.length > 20) undoStack.shift();
+      } catch (e) {
+        console.error('undo snapshot failed', e);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundBtn');
+      if (btn) btn.textContent = soundEnabled ? '효과음 ON' : '효과음 OFF';
+    }
+
+    function clearCanvas() {
+      if (isDrawer) saveUndoState();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (canvasRef) set(canvasRef, { data: '', ts: Date.now() });
+    }
+
+    function undoCanvas() {
+      if (!isDrawer || !undoStack.length) return;
+      const prev = undoStack.pop();
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        if (canvasRef) set(canvasRef, { data: canvas.toDataURL(), ts: Date.now() });
+      };
+      img.src = prev;
+    }
+
+    function toggleEraser() {
+      erasing = !erasing;
+      document.getElementById('eraserBtn').textContent = erasing ? '지우개 ON' : '지우개';
+    }
+    function setSize(size) { brushSize = size; }
+
+    async function showResult() {
+      if (timerInterval) clearInterval(timerInterval);
+      detachAllListeners();
+      showScreen('screenResult');
+      const [playersSnap, gameSnap, groupsSnap] = await Promise.all([get(playersRef), get(gameRef), get(groupsRef)]);
+      const players = playersSnap.val() || {};
+      const game = gameSnap.val() || {};
+      const groups = groupsSnap.val() || {};
+
+      const medals = ['🥇', '🥈', '🥉'];
+      const list = document.getElementById('resultList');
+      list.innerHTML = '<h3>모둠 최종 순위</h3>';
+
+      const rankedGroups = Object.entries(groups).map(([groupKey, group]) => ({
+        groupKey,
+        name: group.name,
+        score: (group.members || []).reduce((sum, uid) => sum + (players[uid]?.score || 0), 0)
+      })).sort((a, b) => b.score - a.score);
+
+      rankedGroups.forEach((g, idx) => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `<div>${medals[idx] || `${idx + 1}위`} ${g.name}</div><div>${g.score}점</div>`;
+        list.appendChild(div);
+      });
+
+      const personalSorted = Object.values(players).filter(p => p.role === 'student').sort((a, b) => (b.score || 0) - (a.score || 0));
+      const topTitle = document.createElement('h3');
+      topTitle.style.marginTop = '18px';
+      topTitle.textContent = '개인 TOP 3';
+      list.appendChild(topTitle);
+
+      personalSorted.slice(0, 3).forEach((p, idx) => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `<div>${medals[idx] || `${idx + 1}위`} ${p.name}</div><div>${p.score || 0}점</div>`;
+        list.appendChild(div);
+      });
+
+      const badgeTitle = document.createElement('h3');
+      badgeTitle.style.marginTop = '18px';
+      badgeTitle.textContent = '칭찬 타이틀';
+      list.appendChild(badgeTitle);
+
+      const awards = buildPersonalAwards(players);
+      const badgeLine = document.createElement('div');
+      badgeLine.className = 'badge-line';
+      awards.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'badge-card';
+        card.innerHTML = `<strong>${a.title}</strong><br>${a.name}<br><span class="small">${a.value}</span>`;
+        badgeLine.appendChild(card);
+      });
+      list.appendChild(badgeLine);
+    }
+
+    function backToLobby() {
+      detachAllListeners();
+      if (timerInterval) clearInterval(timerInterval);
+      rulesShownForRoom = false;
+      const overlay = document.getElementById('rulesOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      showScreen('screenLobby');
+    }
+
+    async function restoreSession() {
+      const saved = JSON.parse(localStorage.getItem('gm_session') || 'null');
+      if (!saved) return;
+      const roomSnap = await get(ref(db, `rooms/${saved.code}`));
+      if (!roomSnap.exists()) return;
+      roomCode = saved.code;
+      initRefs();
+      const playerSnap = await get(ref(db, `rooms/${roomCode}/players/${myId}`));
+      if (!playerSnap.exists()) return;
+      myName = playerSnap.val().name;
+      myRole = playerSnap.val().role;
+      await attachPresence(myName);
+      const gameSnap = await get(gameRef);
+      const game = gameSnap.val();
+      lastRestoredStatus = game?.status || 'waiting';
+      if (game?.status === 'playing') enterGame();
+      else if (game?.status === 'result') showResult();
+      else enterWaiting();
+    }
+
+    (async function boot() {
+      await ensureAnonymousAuth();
+      await restoreSession();
+    })();
+  </script>
+</body>
+</html>
