@@ -240,6 +240,10 @@
           </div>
 
           <div>
+            <div id="teacherMonitor" class="card hidden" style="margin-bottom:10px;">
+              <h3 style="margin-bottom:10px;">관리자 모니터</h3>
+              <div id="teacherMonitorContent" class="small">현재 출제 중인 모둠 화면만 모니터링합니다.</div>
+            </div>
             <div class="chat-box" id="chatBox"></div>
             <div id="drawerNotice" class="card hidden" style="margin-top:10px; text-align:center;">지금은 네가 그림을 그릴 차례야 ✏️</div>
             <div id="answerWrap" class="card" style="margin-top:10px;">
@@ -254,7 +258,7 @@
               <div id="teacherOverviewContent" class="small"></div>
             </div>
             <div id="teacherGameControls" class="card hidden" style="margin-top:10px;">
-              <button class="btn-secondary" onclick="nextRound()">다음 라운드</button>
+              <div class="small">정답이 나오면 5초 뒤 자동으로 다음 라운드로 넘어갑니다.</div>
             </div>
           </div>
         </div>
@@ -342,6 +346,8 @@
     let soundEnabled = true;
     let rulesShownForRoom = false;
     let lastRestoredStatus = '';
+    let lastWrongPopupKey = '';
+    let lastDrawerTurnKey = '';
 
     const canvas = document.getElementById('drawCanvas');
     const ctx = canvas.getContext('2d');
@@ -865,7 +871,19 @@
         document.getElementById('answerWrap').classList.toggle('hidden', isDrawer);
         document.getElementById('teacherGameControls').classList.toggle('hidden', myRole !== 'teacher');
         document.getElementById('teacherOverview').classList.toggle('hidden', myRole !== 'teacher');
+        document.getElementById('teacherMonitor').classList.toggle('hidden', myRole !== 'teacher');
         document.getElementById('groupRotationInfo').textContent = `${group.name} 안에서 아직 덜 한 사람부터 출제 중`;
+
+        if (myRole === 'teacher') {
+          const mon = document.getElementById('teacherMonitorContent');
+          mon.innerHTML = `<strong>${group.name}</strong><br>현재 출제자: ${players[g.drawerId]?.name || '-'}<br>남은 시간은 상단에 표시됩니다.<br>교사는 관리자 모드로 모니터만 합니다.`;
+        }
+
+        const drawerTurnKey = `${g.round}-${g.drawerId || ''}`;
+        if (isDrawer && drawerTurnKey && lastDrawerTurnKey !== drawerTurnKey) {
+          lastDrawerTurnKey = drawerTurnKey;
+          showCenterPopup('당신이 그릴 차례입니다!!', '3초 동안 준비하고 그림을 시작하세요!', 3000, 'success');
+        }
 
         if (g.round !== currentRoundSeen) {
           currentRoundSeen = g.round || 0;
@@ -901,7 +919,7 @@
         if (g.roundOver && g.answeredBy && lastCelebrationKey !== celebrationKey) {
           lastCelebrationKey = celebrationKey;
           const winnerName = players[g.answeredBy]?.name || '어떤 학생';
-          showCenterPopup('정답!', `${winnerName} 학생이 맞혔어요 · 5초 뒤 다음 라운드`, 3000);
+          showCenterPopup('정답입니다!!', `${winnerName} +10점 획득!!`, 3000, 'success');
           playCorrectSound();
         }
 
@@ -957,7 +975,7 @@
       const candidate = msgList.find(msg =>
         !msg.system &&
         (msg.round === g.round) &&
-        String(msg.text || '').toLowerCase() === String(g.keyword || '').toLowerCase()
+        (msg.isCorrectGuess === true || String(msg.text || '').toLowerCase() === String(g.keyword || '').toLowerCase())
       );
       if (!candidate) return;
 
@@ -1018,13 +1036,25 @@
       const g = gameSnap.val();
       if (!g || g.roundOver) return;
 
+      const isCorrect = answer.toLowerCase() == String(g.keyword || '').toLowerCase();
+
       await push(chatRef, {
         uid: myId,
         name: myName,
         text: answer,
         ts: Date.now(),
-        round: g.round
+        round: g.round,
+        isCorrectGuess: isCorrect
       });
+
+      if (!isCorrect) {
+        const wrongKey = `${g.round}-${myId}-${answer}`;
+        if (lastWrongPopupKey !== wrongKey) {
+          lastWrongPopupKey = wrongKey;
+          showCenterPopup('오답입니다!!', '다시 도전하세요!!', 1800, 'fail');
+          playFailSound();
+        }
+      }
     }
 
     async function nextRound() {
