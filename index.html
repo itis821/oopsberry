@@ -547,7 +547,7 @@ import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/1
 import { getDatabase, ref, set, get, update, onValue, off, push, remove, onDisconnect, runTransaction } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js';
 
 const firebaseConfig={apiKey:'AIzaSyCO6d8xemPjvrd4_twdiouZ4vG-AlFiexo',authDomain:'drawdrawonthewall.firebaseapp.com',databaseURL:'https://drawdrawonthewall-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'drawdrawonthewall',storageBucket:'drawdrawonthewall.firebasestorage.app',messagingSenderId:'843622460328',appId:'1:843622460328:web:64e4cb2c8760a9e00d8b9d'};
-const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); const APP_VERSION='v5';
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); const APP_VERSION='v4';
 const COLORS=['#222222','#e63946','#ff6b35','#f4a261','#f4d35e','#2a9d8f','#457b9d','#9b5de5'],DEFAULT_WORDS=['사과','고양이','학교','축구공','비행기','나비','수박','로봇'];
 const BANNED_PATTERNS=[/씨발|시발|쉬발|쉬벌|시벌|십팔|ㅅㅂ|ㅆㅂ|ㅅ\s*ㅂ/i,/병신|븅신|ㅂㅅ|ㅂ\s*ㅅ/i,/미친|ㅁㅊ|ㅁ\s*ㅊ|지랄|염병|개새|꺼져|존나|좆|좇/i,/섹스|ㅅㅅ|성기|자지|보지|야동|포르노|딸딸|음경|질|애무|가슴빨/i,/fuck|f\s*u\s*c\s*k|shit|bitch|sex|porn|dick|pussy/i,/보\s*지|자\s*지|씨\s*발|시\s*발|병\s*신/i,/[ㅂㅈ]{2,}|[ㅈㄹ]{2,}|[ㅅㅂ]{2,}/i];
 let myId=localStorage.getItem('gm_uid'); if(!myId){myId='u_'+Math.random().toString(36).slice(2,11);localStorage.setItem('gm_uid',myId)}
@@ -568,20 +568,7 @@ function normalizeForFilter(text){return String(text||'').toLowerCase().replace(
 function sanitizeAnswer(text){return String(text||'').replace(/\s+/g,' ').trim()} function containsBannedWord(text){const n=normalizeForFilter(text);return BANNED_PATTERNS.some(rx=>rx.test(n))}
 async function attachPresence(name){const presRef=ref(db,`presence/${myId}`); await set(presRef,{name,ts:Date.now()}); onDisconnect(presRef).remove(); const userRef=ref(db,`stats/users/${myId}`),snap=await get(userRef),user=snap.val(); if(!user?.firstSeen) await runTransaction(ref(db,'stats/counters/totalUsers'),v=>(v||0)+1); if(user?.lastDate!==todayKey()) await runTransaction(ref(db,`stats/counters/daily_${todayKey()}`),v=>(v||0)+1); await update(userRef,{firstSeen:user?.firstSeen||Date.now(),lastDate:todayKey(),name})}
 function loadStats(){addListener('stat_presence',ref(db,'presence'),snap=>{document.getElementById('statOnline').textContent=Object.keys(snap.val()||{}).length});addListener('stat_counters',ref(db,'stats/counters'),snap=>{const v=snap.val()||{};document.getElementById('statTotal').textContent=v.totalUsers||0;document.getElementById('statToday').textContent=v[`daily_${todayKey()}`]||0})}
-function selectRole(role){
-myRole=role;
-detachAllListeners();
-localStorage.removeItem('gm_session');
-roomCode='';
-if(role==='teacher'){
-  showScreen('screenTeacherHome');
-  loadStats();
-}else{
-  showScreen('screenStudentHome');
-  document.getElementById('studentName').value='';
-  document.getElementById('roomCodeInput').value='';
-}
-}
+function selectRole(role){myRole=role;detachAllListeners(); if(role==='teacher'){showScreen('screenTeacherHome');loadStats()} else {showScreen('screenStudentHome'); const saved=JSON.parse(localStorage.getItem('gm_session')||'null'); if(saved){document.getElementById('studentName').value=saved.name||'';document.getElementById('roomCodeInput').value=saved.code||''}}}
 function initRefs(){roomRef=ref(db,`rooms/${roomCode}`);playersRef=ref(db,`rooms/${roomCode}/players`);gameRef=ref(db,`rooms/${roomCode}/game`);chatRef=ref(db,`rooms/${roomCode}/chat`);canvasRef=ref(db,`rooms/${roomCode}/canvas`);settingsRef=ref(db,`rooms/${roomCode}/settings`)}
 function addListener(key,targetRef,callback){if(listeners[key])off(listeners[key].targetRef,'value',listeners[key].callback);onValue(targetRef,callback);listeners[key]={targetRef,callback}}
 function detachAllListeners(){Object.values(listeners).forEach(({targetRef,callback})=>off(targetRef,'value',callback));listeners={}}
@@ -614,12 +601,12 @@ await set(playersRef,{[myId]:{name:teacherName,role:'teacher',isManager:true,sco
 await set(settingsRef,{roundCount:words.length,timeLimit,words,appVersion:APP_VERSION});
 await set(gameRef,{status:'waiting',round:0,totalRounds:words.length,drawerId:'',keyword:'',timeLimit,timerStart:0,answeredBy:'',usedWords:[],usedDrawers:[],roundOver:false});
 await set(canvasRef,{data:'',ts:Date.now()});
-localStorage.setItem('gm_session',JSON.stringify({code:roomCode,name:myName,role:myRole,appVersion:APP_VERSION}));
+localStorage.setItem('gm_session',JSON.stringify({code:roomCode,name:myName,role:myRole}));
 await attachPresence(myName);
 rulesShownForRoom=false;
 enterWaiting()
 }
-async function joinRoom(){const desiredName=(document.getElementById('studentName').value||'').trim(),code=(document.getElementById('roomCodeInput').value||'').trim().toUpperCase();if(!desiredName)return toast('이름을 입력해줘.');if(!code)return toast('방 코드를 입력해줘.');const roomSnap=await get(ref(db,`rooms/${code}`));if(!roomSnap.exists())return toast('방을 찾을 수 없어.');roomCode=code;initRefs();myRole='student';myName=await resolveUniqueName(code,desiredName);const existingSnap=await get(ref(db,`rooms/${roomCode}/players/${myId}`));if(existingSnap.exists())await update(ref(db,`rooms/${roomCode}/players/${myId}`),{name:myName});else await set(ref(db,`rooms/${roomCode}/players/${myId}`),{name:myName,role:'student',score:0,drawCount:0,correctCount:0,joinedAt:Date.now()});localStorage.setItem('gm_session',JSON.stringify({code:roomCode,name:myName,role:myRole,appVersion:APP_VERSION}));await attachPresence(myName);rulesShownForRoom=false;enterWaiting()}
+async function joinRoom(){const desiredName=(document.getElementById('studentName').value||'').trim(),code=(document.getElementById('roomCodeInput').value||'').trim().toUpperCase();if(!desiredName)return toast('이름을 입력해줘.');if(!code)return toast('방 코드를 입력해줘.');const roomSnap=await get(ref(db,`rooms/${code}`));if(!roomSnap.exists())return toast('방을 찾을 수 없어.');roomCode=code;initRefs();myRole='student';myName=await resolveUniqueName(code,desiredName);const existingSnap=await get(ref(db,`rooms/${roomCode}/players/${myId}`));if(existingSnap.exists())await update(ref(db,`rooms/${roomCode}/players/${myId}`),{name:myName});else await set(ref(db,`rooms/${roomCode}/players/${myId}`),{name:myName,role:'student',score:0,drawCount:0,correctCount:0,joinedAt:Date.now()});localStorage.setItem('gm_session',JSON.stringify({code:roomCode,name:myName,role:myRole}));await attachPresence(myName);rulesShownForRoom=false;enterWaiting()}
 async function enterWaiting(){detachAllListeners();showScreen('screenWaiting');document.getElementById('waitingRoomCode').textContent=roomCode;document.getElementById('teacherWaitControls').classList.toggle('hidden',myRole!=='teacher');addListener('waiting_players',playersRef,snap=>{const players=snap.val()||{};window.__playersCache=players;const list=document.getElementById('playerList');list.innerHTML='';Object.entries(players).forEach(([uid,p])=>{const chip=document.createElement('div');chip.className='chip'+(uid===myId?' me':'');chip.textContent=`${p.role==='teacher'?'👩‍🏫':'🧒'} ${p.name}`;list.appendChild(chip)});const studentCount=Object.values(players).filter(p=>p.role==='student').length;document.getElementById('waitingStatus').textContent=`현재 학생 ${studentCount}명 접속 중`;document.getElementById('startBtn').disabled=studentCount<1});addListener('waiting_game',gameRef,snap=>{const g=snap.val();if(!g)return;if(g.status==='playing')enterGame();if(g.status==='result')showResult()})}
 async function startGame(){
 await update(roomRef,{status:'playing'});
@@ -695,10 +682,6 @@ showScreen('screenLobby');
 async function restoreSession(){
 const saved=JSON.parse(localStorage.getItem('gm_session')||'null');
 if(!saved)return;
-if(saved.appVersion && saved.appVersion!==APP_VERSION){
-  localStorage.removeItem('gm_session');
-  return;
-}
 const roomSnap=await get(ref(db,`rooms/${saved.code}`));
 if(!roomSnap.exists()){ localStorage.removeItem('gm_session'); return; }
 const roomMeta=roomSnap.val()||{};
