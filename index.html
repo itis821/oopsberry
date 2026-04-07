@@ -481,7 +481,7 @@ import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/1
 import { getDatabase, ref, set, get, update, onValue, off, push, remove, onDisconnect, runTransaction } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js';
 
 const firebaseConfig={apiKey:'AIzaSyCO6d8xemPjvrd4_twdiouZ4vG-AlFiexo',authDomain:'drawdrawonthewall.firebaseapp.com',databaseURL:'https://drawdrawonthewall-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'drawdrawonthewall',storageBucket:'drawdrawonthewall.firebasestorage.app',messagingSenderId:'843622460328',appId:'1:843622460328:web:64e4cb2c8760a9e00d8b9d'};
-const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); const APP_VERSION='v7';
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); const APP_VERSION='v8';
 const COLORS=['#f0f0e0','#e63946','#ff6b35','#f4a261','#f4d35e','#2a9d8f','#457b9d','#9b5de5'],DEFAULT_WORDS=['사과','고양이','학교','축구공','비행기','나비','수박','로봇'];
 const BANNED_PATTERNS=[/씨발|시발|쉬발|쉬벌|시벌|십팔|ㅅㅂ|ㅆㅂ|ㅅ\s*ㅂ/i,/병신|븅신|ㅂㅅ|ㅂ\s*ㅅ/i,/미친|ㅁㅊ|ㅁ\s*ㅊ|지랄|염병|개새|꺼져|존나|좆|좇/i,/섹스|ㅅㅅ|성기|자지|보지|야동|포르노|딸딸|음경|질|애무|가슴빨/i,/fuck|f\s*u\s*c\s*k|shit|bitch|sex|porn|dick|pussy/i,/보\s*지|자\s*지|씨\s*발|시\s*발|병\s*신/i,/[ㅂㅈ]{2,}|[ㅈㄹ]{2,}|[ㅅㅂ]{2,}/i];
 let myId=localStorage.getItem('gm_uid'); if(!myId){myId='u_'+Math.random().toString(36).slice(2,11);localStorage.setItem('gm_uid',myId)}
@@ -520,7 +520,7 @@ function initRefs(){roomRef=ref(db,`rooms/${roomCode}`);playersRef=ref(db,`rooms
 function addListener(key,targetRef,callback){if(listeners[key])off(listeners[key].targetRef,'value',listeners[key].callback);onValue(targetRef,callback);listeners[key]={targetRef,callback}}
 function detachAllListeners(){Object.values(listeners).forEach(({targetRef,callback})=>off(targetRef,'value',callback));listeners={}}
 async function genUniqueRoomCode(){for(let i=0;i<15;i++){const code=Math.random().toString(36).slice(2,6).toUpperCase();const snap=await get(ref(db,`rooms/${code}/code`));if(!snap.exists())return code}return Math.random().toString(36).slice(2,8).toUpperCase()}
-function parseWords(raw){const pieces=raw.split(/[,\n]/).map(v=>v.trim()).filter(Boolean);return [...new Set([...pieces,...DEFAULT_WORDS])]}
+function parseWords(raw){const pieces=raw.split(/[,\n]/).map(v=>v.trim()).filter(Boolean);return [...new Set(pieces)]}
 async function resolveUniqueName(code,desiredName){const snap=await get(ref(db,`rooms/${code}/players`));const players=snap.val()||{};const mine=players[myId];if(mine)return mine.name||desiredName;const used=Object.values(players).map(p=>p.name);if(!used.includes(desiredName))return desiredName;let idx=2;while(used.includes(`${desiredName}${idx}`))idx++;return `${desiredName}${idx}`}
 function getNextDrawer(players,usedDrawers){
 const students=Object.entries(players).filter(([,p])=>p.role==='student').map(([uid])=>uid);
