@@ -3,56 +3,479 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-<title>그림으로 말해요 - 단순형</title>
+<title>나는야 피카소 🎨</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff8ef;color:#333;font-family:Arial,sans-serif}body{min-height:100vh}
-.screen{display:none;min-height:100vh;padding:16px}.screen.active{display:block}.wrap{max-width:1280px;margin:0 auto}
-.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 18px rgba(0,0,0,.08);margin-bottom:14px}
-h1,h2,h3{margin-top:0}button,input,select,textarea{font:inherit}
-input,select,textarea{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #ddd;margin-bottom:10px}
-textarea{min-height:96px;resize:vertical}button{border:none;border-radius:14px;padding:14px 18px;cursor:pointer;font-weight:700}
-.btn-primary{background:#ff6b35;color:#fff}.btn-secondary{background:#4ecdc4;color:#fff}.btn-gray{background:#eee;color:#444}.btn-green{background:#41b883;color:#fff}
-.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.role-buttons{display:grid;gap:10px;max-width:460px}.room-code{font-size:38px;letter-spacing:6px;font-weight:800;text-align:center;color:#ff6b35}
-.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{background:#f1f1f1;border-radius:999px;padding:8px 12px;font-size:14px}.chip.me{background:#ff6b35;color:#fff}
+/* ── 기본 리셋 & 폰트 ── */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;color:#3d2c1e;font-family:'Noto Sans KR',sans-serif}
+body{min-height:100vh;background:#f0f7e6 url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b5d99c' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+
+/* ── 화면 공통 ── */
+.screen{display:none;min-height:100vh;padding:18px}.screen.active{display:block}
+.wrap{max-width:1280px;margin:0 auto}
+
+/* ── 나무 질감 카드 ── */
+.card{
+  background:linear-gradient(160deg,#fffdf4 0%,#fdf3dc 100%);
+  border-radius:22px;
+  padding:20px;
+  box-shadow:0 6px 0 #c9a96e, 0 8px 24px rgba(0,0,0,.13);
+  border:2.5px solid #d4aa70;
+  margin-bottom:16px;
+  position:relative;
+}
+
+/* ── 제목 ── */
+h1,h2,h3{margin-top:0;font-family:'Jua',sans-serif}
+h1{font-size:2.6em;color:#4a7c3f;text-shadow:2px 3px 0 #b5d99c}
+h2{font-size:1.7em;color:#5c3d1e;border-bottom:3px dashed #d4aa70;padding-bottom:8px;margin-bottom:16px}
+h3{font-size:1.2em;color:#5c3d1e}
+
+/* ── 입력 요소 ── */
+button,input,select,textarea{font:inherit}
+input,select,textarea{
+  width:100%;padding:14px 16px;
+  border-radius:14px;
+  border:2.5px solid #c9a96e;
+  background:#fffdf4;
+  margin-bottom:10px;
+  font-size:1em;
+  color:#3d2c1e;
+  transition:border .2s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#4a7c3f;background:#f6fff0}
+textarea{min-height:96px;resize:vertical}
+
+/* ── 버튼 ── */
+button{
+  border:none;border-radius:50px;
+  padding:14px 22px;cursor:pointer;font-weight:700;
+  font-family:'Jua',sans-serif;font-size:1em;
+  letter-spacing:.5px;
+  transition:transform .12s, box-shadow .12s;
+  position:relative;top:0;
+}
+button:active{transform:translateY(3px);box-shadow:none!important}
+.btn-primary{background:#ff8c42;color:#fff;box-shadow:0 5px 0 #c45e1a}
+.btn-secondary{background:#5bbfb5;color:#fff;box-shadow:0 5px 0 #3a8a82}
+.btn-gray{background:#d9c9a3;color:#5c3d1e;box-shadow:0 5px 0 #b0996a}
+.btn-green{background:#5aac44;color:#fff;box-shadow:0 5px 0 #3a7a2c}
+
+/* ── 그리드 ── */
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+
+/* ── 역할 버튼 ── */
+.role-buttons{display:grid;gap:12px;max-width:460px}
+.role-buttons button{padding:20px;font-size:1.2em}
+
+/* ── 방 코드 ── */
+.room-code{
+  font-size:46px;letter-spacing:10px;font-weight:800;
+  font-family:'Jua',sans-serif;
+  text-align:center;color:#fff;
+  background:#4a7c3f;
+  border-radius:18px;
+  padding:16px 24px;
+  box-shadow:0 6px 0 #2f5228, inset 0 2px 6px rgba(255,255,255,.15);
+  text-shadow:2px 2px 0 #2f5228;
+  letter-spacing:12px;
+}
+
+/* ── 칩/배지 ── */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  background:#fff;border:2px solid #d4aa70;
+  border-radius:999px;padding:8px 14px;font-size:.95em;
+  font-weight:700;color:#5c3d1e;
+  box-shadow:0 3px 0 #c9a96e;
+}
+.chip.me{background:#ff8c42;border-color:#c45e1a;color:#fff;box-shadow:0 3px 0 #c45e1a}
+
+/* ── 게임 레이아웃 ── */
 .game-layout{display:grid;grid-template-columns:1.65fr 1fr;gap:14px;align-items:start}
-canvas{width:100%;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);touch-action:none;min-height:420px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.color-dot{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer}.color-dot.active{border-color:#222}
-.chat-box{height:360px;overflow:auto;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.msg{margin-bottom:8px;line-height:1.4}.msg .name{font-weight:700;color:#ff6b35}.msg.system{color:#777;font-style:italic}.msg.correct{background:#eaffea;border-radius:10px;padding:6px 8px}
-.answer-row{display:flex;gap:8px;margin-top:10px}.answer-row input{margin-bottom:0}.score-list{display:flex;flex-wrap:wrap;gap:8px}
-.score-item{background:#f1f1f1;padding:6px 10px;border-radius:10px;font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.stat{background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.08)}.stat .num{font-size:30px;font-weight:800;color:#ff6b35}
-.banner{background:#fff3ee;border:2px solid #ff6b35;border-radius:14px;padding:12px;margin-bottom:10px}.hidden{display:none!important}.small{font-size:13px;color:#666}
-.result-item{display:flex;justify-content:space-between;background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}.footer-credit{text-align:center;font-size:13px;color:#777;padding:18px 0 8px}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}.overlay.hidden{display:none}
-.modal{background:#fff;width:min(680px,100%);border-radius:18px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.22)}.modal h3{margin-top:0;margin-bottom:12px;color:#ff6b35}.modal p{margin:0 0 10px;line-height:1.55}
-.countdown{font-size:28px;font-weight:800;color:#ff6b35;text-align:center;margin-top:8px}.badge-line{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.badge-card{background:#fff3ee;border:2px solid #ff6b35;border-radius:14px;padding:10px 12px;flex:1;min-width:180px}
-.center-popup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10000;background:#fff;border:4px solid #ff6b35;border-radius:22px;padding:26px 30px;min-width:280px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.24)}
-.center-popup.hidden{display:none}.center-popup .big{font-size:34px;font-weight:800;color:#ff6b35;margin-bottom:8px}.center-popup .sub{font-size:18px;color:#444}
-@media(max-width:900px){.grid-2,.grid-4,.game-layout,.stats{grid-template-columns:1fr}.chat-box{height:220px}canvas{min-height:320px}}
+
+/* ── 칠판 캔버스 ── */
+canvas{
+  width:100%;
+  background:#2d5a27;
+  border-radius:18px;
+  box-shadow:0 0 0 10px #5c3d1e, 0 0 0 13px #8b6343, 0 12px 30px rgba(0,0,0,.25);
+  touch-action:none;
+  min-height:420px;
+  display:block;
+}
+
+/* ── 툴바 (분필 느낌) ── */
+.toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;
+  background:linear-gradient(135deg,#f5e6c8,#ede0c4);
+  border-radius:16px;padding:12px 14px;
+  border:2px solid #c9a96e;
+  box-shadow:0 4px 0 #b0996a;
+}
+.color-dot{
+  width:36px;height:36px;border-radius:50%;
+  border:4px solid transparent;cursor:pointer;
+  box-shadow:0 3px 6px rgba(0,0,0,.2);
+  transition:transform .12s;
+}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.active{border-color:#3d2c1e;transform:scale(1.2)}
+
+/* ── 채팅박스 (칠판 노트 느낌) ── */
+.chat-box{
+  height:360px;overflow:auto;
+  background:#fffdf4;
+  border-radius:16px;padding:14px;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.07);
+  border:2.5px solid #d4aa70;
+  /* 줄 노트 배경 */
+  background-image:repeating-linear-gradient(transparent,transparent 31px,#f0e4c4 31px,#f0e4c4 32px);
+  background-attachment:local;
+}
+.msg{margin-bottom:10px;line-height:1.5;font-size:.95em}
+.msg .name{font-weight:700;color:#4a7c3f;font-family:'Jua',sans-serif}
+.msg.system{color:#8b7355;font-style:italic;font-size:.88em}
+.msg.correct{
+  background:linear-gradient(135deg,#fff9c4,#fff3aa);
+  border-radius:10px;padding:6px 10px;
+  border-left:4px solid #f4c430;
+  font-weight:700;color:#5c3d1e;
+}
+
+/* ── 정답 입력 ── */
+.answer-row{display:flex;gap:8px;margin-top:10px}
+.answer-row input{margin-bottom:0;font-size:1.05em}
+
+/* ── 점수판 ── */
+.score-list{display:flex;flex-wrap:wrap;gap:8px}
+.score-item{
+  background:#fff;border:2px solid #d4aa70;
+  padding:6px 12px;border-radius:12px;font-size:.9em;
+  font-weight:700;color:#5c3d1e;
+  box-shadow:0 3px 0 #c9a96e;
+}
+
+/* ── 통계 ── */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat{
+  background:linear-gradient(160deg,#fffdf4,#fdf3dc);
+  border-radius:18px;padding:18px;text-align:center;
+  box-shadow:0 6px 0 #c9a96e,0 8px 20px rgba(0,0,0,.1);
+  border:2.5px solid #d4aa70;
+}
+.stat .num{font-size:2.4em;font-weight:800;color:#ff8c42;font-family:'Jua',sans-serif}
+
+/* ── 배너 (제시어) ── */
+.banner{
+  background:linear-gradient(135deg,#e8f5e1,#d4edd0);
+  border:2.5px solid #5aac44;
+  border-radius:16px;padding:14px;margin-bottom:10px;
+  box-shadow:0 4px 0 #3a7a2c;
+}
+
+/* ── 헤더 카드 (게임 상단 정보) ── */
+#screenGame .card:first-child{
+  background:linear-gradient(135deg,#3d5a2c,#4a7c3f);
+  color:#fff;border-color:#2f5228;
+  box-shadow:0 6px 0 #1e3a1a;
+}
+#screenGame .card:first-child strong{color:#b5e48c}
+#screenGame .card:first-child .score-item{
+  background:rgba(255,255,255,.15);
+  border-color:rgba(255,255,255,.3);
+  color:#fff;
+  box-shadow:none;
+}
+#timerDisplay{
+  font-family:'Jua',sans-serif;font-size:1.4em;
+  background:#ff8c42;color:#fff;
+  border-radius:10px;padding:2px 10px;
+  box-shadow:0 3px 0 #c45e1a;
+  display:inline-block;
+}
+
+/* ── 숨김 / 유틸 ── */
+.hidden{display:none!important}
+.small{font-size:.88em;color:#8b7355;margin-top:4px}
+
+/* ── 결과 아이템 ── */
+.result-item{
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(135deg,#fffdf4,#fdf3dc);
+  border-radius:16px;padding:16px 20px;margin-bottom:10px;
+  box-shadow:0 6px 0 #c9a96e;border:2.5px solid #d4aa70;
+  font-family:'Jua',sans-serif;font-size:1.1em;
+}
+
+/* ── 배지 라인 ── */
+.badge-line{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.badge-card{
+  background:linear-gradient(135deg,#fff9c4,#fff3aa);
+  border:2.5px solid #f4c430;border-radius:16px;
+  padding:12px 16px;flex:1;min-width:180px;
+  box-shadow:0 5px 0 #c9a200;
+  font-family:'Jua',sans-serif;
+}
+
+/* ── 푸터 ── */
+.footer-credit{text-align:center;font-size:.8em;color:#8b7355;padding:18px 0 8px}
+
+/* ── 오버레이 / 모달 ── */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(30,20,10,.65);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:20px;
+}
+.overlay.hidden{display:none}
+.modal{
+  background:linear-gradient(160deg,#fffdf4,#fdf3dc);
+  width:min(680px,100%);border-radius:24px;padding:28px;
+  box-shadow:0 8px 0 #c9a96e,0 16px 40px rgba(0,0,0,.3);
+  border:3px solid #d4aa70;
+}
+.modal h3{color:#4a7c3f;font-size:1.5em;margin-bottom:14px;font-family:'Jua',sans-serif}
+.modal p{margin:0 0 10px;line-height:1.6;color:#5c3d1e}
+.countdown{font-size:2em;font-weight:800;color:#ff8c42;text-align:center;margin-top:10px;font-family:'Jua',sans-serif}
+
+/* ── 팝업 ── */
+.center-popup{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  z-index:10000;
+  background:linear-gradient(160deg,#fffdf4,#fdf3dc);
+  border:5px solid #ff8c42;border-radius:28px;
+  padding:30px 36px;min-width:300px;text-align:center;
+  box-shadow:0 10px 0 #c45e1a,0 18px 50px rgba(0,0,0,.3);
+  animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:translate(-50%,-50%) scale(.7);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.center-popup.hidden{display:none}
+.center-popup .big{font-size:2.2em;font-weight:800;color:#ff8c42;margin-bottom:10px;font-family:'Jua',sans-serif}
+.center-popup .sub{font-size:1.1em;color:#5c3d1e;font-weight:700}
+
+/* ── 로비 특별 스타일 ── */
+#screenLobby{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext y='50' font-size='40'%3E🌿%3C/text%3E%3C/svg%3E") left 10px top 10px/60px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext y='50' font-size='40'%3E🍎%3C/text%3E%3C/svg%3E") right 10px top 10px/60px no-repeat,
+    linear-gradient(180deg,#c8e6c9 0%,#f0f7e6 40%,#e8d5b0 100%);
+}
+#screenLobby .card{
+  text-align:center;padding:48px 28px;
+  background:linear-gradient(160deg,#fffdf4 0%,#fdf3dc 100%);
+  border:3px solid #d4aa70;
+  max-width:520px;margin:0 auto;
+}
+/* 칠판 느낌 타이틀 박스 */
+.lobby-board{
+  background:#2d5a27;
+  border-radius:18px;padding:22px 28px;
+  box-shadow:0 0 0 8px #5c3d1e,0 0 0 11px #8b6343,0 12px 30px rgba(0,0,0,.2);
+  margin-bottom:28px;display:inline-block;width:100%;
+}
+.lobby-board h1{color:#fff;font-size:2.8em;margin:0;text-shadow:2px 3px 0 #1a3a17}
+.lobby-board p{color:#b5e48c;font-family:'Jua',sans-serif;font-size:1.3em;margin:8px 0 0}
+
+/* ── 대기실 방 코드 영역 ── */
+#screenWaiting .card{text-align:center}
+
+/* ── 모바일 대응 ── */
+@media(max-width:900px){
+  .grid-2,.grid-4,.game-layout,.stats{grid-template-columns:1fr}
+  .chat-box{height:220px}
+  canvas{min-height:300px}
+  h1{font-size:2em}
+  .room-code{font-size:32px}
+}
+
+/* ── 교사 모니터 ── */
+#teacherMonitor{background:linear-gradient(135deg,#e8f5e1,#d4edd0);border-color:#5aac44}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#f0e4c4;border-radius:8px}
+::-webkit-scrollbar-thumb{background:#c9a96e;border-radius:8px}
 </style>
 </head>
 <body>
 <div id="app">
-<section class="screen active" id="screenLobby"><div class="wrap"><div class="card" style="text-align:center;padding:40px 20px;"><h1>🎨 그림으로 말해요</h1><p>나는야 피카소</p><div class="role-buttons" style="margin:20px auto 0;"><button class="btn-primary" onclick="selectRole('teacher')">👩‍🏫 교사(관리자)로 시작</button><button class="btn-secondary" onclick="selectRole('student')">🧒 학생으로 참여</button></div></div><div class="footer-credit">Created by. 민프피</div></div></section>
 
-<section class="screen" id="screenTeacherHome"><div class="wrap"><h2>교사 관리자 설정</h2><div class="stats" style="margin-bottom:16px;"><div class="stat"><div class="num" id="statTotal">-</div><div>누적 사용자</div></div><div class="stat"><div class="num" id="statToday">-</div><div>오늘 접속자</div></div><div class="stat"><div class="num" id="statOnline">-</div><div>현재 접속자</div></div></div><div class="card"><div class="grid-2"><div><label>선생님 이름</label><input id="teacherName" maxlength="12" placeholder="예: 민영쌤" /></div><div><label>라운드 수</label><input id="roundCount" type="number" min="1" max="50" value="5" /></div><div><label>라운드 시간</label><select id="timeLimit"><option value="180">3분</option><option value="240">4분</option><option value="300">5분</option></select></div><div><label>효과음</label><select id="soundSelect"><option value="on">ON</option><option value="off">OFF</option></select></div></div><label>정답 단어 목록 (쉼표 또는 줄바꿈 구분)</label><textarea id="wordInput" placeholder="사과, 고양이, 학교"></textarea><div class="small">1명이 출제하고 나머지 학생 전원이 정답을 맞히는 단순형 버전이야.</div><div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;"><button class="btn-primary" onclick="createRoom()">방 만들기</button><button class="btn-gray" onclick="showScreen('screenLobby')">뒤로</button><button class="btn-gray" onclick="backToLobby()">처음으로</button></div></div><div class="footer-credit">Created by. 민프피</div></div></section>
+<!-- ── 로비 ── -->
+<section class="screen active" id="screenLobby">
+  <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+    <div class="card">
+      <div class="lobby-board">
+        <h1>🎨 그림으로 말해요</h1>
+        <p>나는야 피카소 ✏️</p>
+      </div>
+      <div class="role-buttons" style="margin:0 auto;">
+        <button class="btn-primary" onclick="selectRole('teacher')">👩‍🏫 교사(관리자)로 시작</button>
+        <button class="btn-secondary" onclick="selectRole('student')">🧒 학생으로 참여</button>
+      </div>
+    </div>
+    <div class="footer-credit">🍀 Created by. 민프피</div>
+  </div>
+</section>
 
-<section class="screen" id="screenStudentHome"><div class="wrap"><h2>학생 참여</h2><div class="card"><input id="studentName" maxlength="12" placeholder="이름" /><input id="roomCodeInput" maxlength="8" placeholder="방 코드" style="text-transform:uppercase;letter-spacing:4px;text-align:center;" /><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-secondary" onclick="joinRoom()">참여하기</button><button class="btn-gray" onclick="showScreen('screenLobby')">뒤로</button></div><div class="small">태블릿은 가로 모드가 가장 편해.</div></div><div class="footer-credit">Created by. 민프피</div></div></section>
+<!-- ── 교사 홈 ── -->
+<section class="screen" id="screenTeacherHome"><div class="wrap">
+  <h2>👩‍🏫 교사 관리자 설정</h2>
+  <div class="stats" style="margin-bottom:18px;">
+    <div class="stat"><div class="num" id="statTotal">-</div><div>🌟 누적 사용자</div></div>
+    <div class="stat"><div class="num" id="statToday">-</div><div>📅 오늘 접속자</div></div>
+    <div class="stat"><div class="num" id="statOnline">-</div><div>🟢 현재 접속자</div></div>
+  </div>
+  <div class="card">
+    <div class="grid-2">
+      <div><label>🏷️ 선생님 이름</label><input id="teacherName" maxlength="12" placeholder="예: 민영쌤" /></div>
+      <div><label>🔄 라운드 수</label><input id="roundCount" type="number" min="1" max="50" value="5" /></div>
+      <div><label>⏱️ 라운드 시간</label><select id="timeLimit"><option value="180">3분</option><option value="240">4분</option><option value="300">5분</option></select></div>
+      <div><label>🔔 효과음</label><select id="soundSelect"><option value="on">ON</option><option value="off">OFF</option></select></div>
+    </div>
+    <label>📝 정답 단어 목록 (쉼표 또는 줄바꿈 구분)</label>
+    <textarea id="wordInput" placeholder="사과, 고양이, 학교 ..."></textarea>
+    <div class="small">💡 1명이 출제하고 나머지 학생 전원이 정답을 맞히는 단순형 버전이야.</div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="createRoom()">🏠 방 만들기</button>
+      <button class="btn-gray" onclick="showScreen('screenLobby')">← 뒤로</button>
+      <button class="btn-gray" onclick="backToLobby()">🏡 처음으로</button>
+    </div>
+  </div>
+  <div class="footer-credit">🍀 Created by. 민프피</div>
+</div></section>
 
-<section class="screen" id="screenWaiting"><div class="wrap"><h2>대기실</h2><div class="card"><div class="room-code" id="waitingRoomCode">----</div><p class="small" style="text-align:center;">이 코드를 학생들에게 알려주세요.</p><div class="chips" id="playerList"></div><p id="waitingStatus"></p><div id="teacherWaitControls" class="hidden"><button class="btn-green" id="startBtn" onclick="startGame()">게임 시작</button></div><div style="margin-top:12px;"><button class="btn-gray" onclick="backToLobby()">처음으로</button></div></div><div class="footer-credit">Created by. 민프피</div></div></section>
+<!-- ── 학생 홈 ── -->
+<section class="screen" id="screenStudentHome"><div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <h2>🧒 학생 참여</h2>
+  <div class="card" style="max-width:460px;width:100%">
+    <input id="studentName" maxlength="12" placeholder="🏷️ 이름" />
+    <input id="roomCodeInput" maxlength="8" placeholder="🔑 방 코드" style="text-transform:uppercase;letter-spacing:6px;text-align:center;font-size:1.3em;font-family:'Jua',sans-serif;" />
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-secondary" onclick="joinRoom()">🚪 참여하기</button>
+      <button class="btn-gray" onclick="showScreen('screenLobby')">← 뒤로</button>
+    </div>
+    <div class="small" style="margin-top:10px">📱 태블릿은 가로 모드가 가장 편해요!</div>
+  </div>
+  <div class="footer-credit">🍀 Created by. 민프피</div>
+</div></section>
 
-<section class="screen" id="screenGame"><div class="wrap"><div class="card"><div class="grid-4"><div><strong>라운드</strong> <span id="curRound">1</span> / <span id="totalRound">1</span></div><div><strong>현재 출제자</strong> <span id="drawerNameMini">-</span></div><div><strong>남은 시간</strong> <span id="timerDisplay">00:00</span></div><div><strong>방 코드</strong> <span id="gameRoomCode">----</span></div></div><div class="score-list" id="scoreBoard" style="margin-top:10px;"></div></div>
-<div class="game-layout"><div><div class="banner"><div><strong>현재 출제자:</strong> <span id="drawerNameDisplay">-</span></div><div id="wordBanner" class="hidden" style="margin-top:8px;font-size:110%;"><strong>제시어:</strong> <span id="keywordDisplay"></span></div><div class="small" style="margin-top:8px;">출제자는 그림으로만 설명하고, 나머지 학생은 정답을 입력해요.</div></div><canvas id="drawCanvas" width="900" height="540"></canvas><div class="toolbar" id="toolBox"><div id="colorPalette" style="display:flex;gap:8px;flex-wrap:wrap;"></div><button class="btn-gray" onclick="undoCanvas()">뒤로 가기</button><button class="btn-gray" id="eraserBtn" onclick="toggleEraser()">지우개</button><button class="btn-gray" id="soundBtn" onclick="toggleSound()">효과음 ON</button><button class="btn-gray" onclick="clearCanvas()">전체 지우기</button></div></div>
-<div><div id="teacherMonitor" class="card hidden" style="margin-bottom:10px;"><h3 style="margin-bottom:10px;">관리자 모니터</h3><div id="teacherMonitorContent" class="small">현재 출제 화면 상태를 모니터링합니다.</div></div><div class="chat-box" id="chatBox"></div><div id="drawerNotice" class="card hidden" style="margin-top:10px;text-align:center;">지금은 네가 그림을 그릴 차례야 ✏️</div><div id="answerWrap" class="card" style="margin-top:10px;"><div class="answer-row"><input id="answerInput" maxlength="40" placeholder="정답 입력" onkeydown="if(event.key==='Enter') submitAnswer()" /><button class="btn-primary" onclick="submitAnswer()">전송</button></div><div class="small">욕설/성적 표현, 초성 변형 일부, 영어 욕설 일부는 차단돼.</div></div><div id="teacherGameControls" class="card hidden" style="margin-top:10px;"><div class="small">정답이 나오면 5초 뒤 자동으로 다음 라운드로 넘어갑니다.</div></div></div></div><div class="footer-credit">Created by. 민프피</div></div></section>
+<!-- ── 대기실 ── -->
+<section class="screen" id="screenWaiting"><div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+  <h2>🎒 대기실</h2>
+  <div class="card" style="max-width:520px;width:100%;text-align:center;">
+    <p class="small" style="margin-bottom:8px">📋 이 코드를 학생들에게 알려주세요!</p>
+    <div class="room-code" id="waitingRoomCode">----</div>
+    <div style="margin:18px 0"><div class="chips" id="playerList" style="justify-content:center"></div></div>
+    <p id="waitingStatus" style="color:#5c3d1e;font-weight:700"></p>
+    <div id="teacherWaitControls" class="hidden" style="margin-top:10px">
+      <button class="btn-green" id="startBtn" onclick="startGame()">▶ 게임 시작!</button>
+    </div>
+    <div style="margin-top:14px"><button class="btn-gray" onclick="backToLobby()">🏡 처음으로</button></div>
+  </div>
+  <div class="footer-credit">🍀 Created by. 민프피</div>
+</div></section>
 
-<section class="screen" id="screenResult"><div class="wrap"><h2>최종 결과</h2><div id="resultList"></div><button class="btn-primary" onclick="backToLobby()">처음으로</button><div class="footer-credit">Created by. 민프피</div></div></section>
+<!-- ── 게임 ── -->
+<section class="screen" id="screenGame"><div class="wrap">
+
+  <!-- 게임 헤더 (초록 칠판 카드) -->
+  <div class="card">
+    <div class="grid-4">
+      <div>📚 라운드 <strong><span id="curRound">1</span> / <span id="totalRound">1</span></strong></div>
+      <div>✏️ 출제자 <strong><span id="drawerNameMini">-</span></strong></div>
+      <div>⏱️ 남은 시간 <span id="timerDisplay">00:00</span></div>
+      <div>🔑 방 코드 <strong><span id="gameRoomCode">----</span></strong></div>
+    </div>
+    <div class="score-list" id="scoreBoard" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- 게임 본체 -->
+  <div class="game-layout">
+
+    <!-- 왼쪽: 칠판 + 툴바 -->
+    <div>
+      <div class="banner">
+        <div>🎨 <strong>현재 출제자:</strong> <span id="drawerNameDisplay">-</span></div>
+        <div id="wordBanner" class="hidden" style="margin-top:8px;font-size:1.1em;">
+          📌 <strong>제시어:</strong> <span id="keywordDisplay" style="color:#4a7c3f;font-family:'Jua',sans-serif;font-size:1.2em;"></span>
+        </div>
+        <div class="small" style="margin-top:6px;">출제자는 그림으로만 설명하고, 나머지 학생은 정답을 입력해요.</div>
+      </div>
+
+      <!-- 칠판 캔버스 -->
+      <canvas id="drawCanvas" width="900" height="540"></canvas>
+
+      <!-- 툴바 -->
+      <div class="toolbar" id="toolBox">
+        <div id="colorPalette" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+        <button class="btn-gray" onclick="undoCanvas()">↩️ 뒤로</button>
+        <button class="btn-gray" id="eraserBtn" onclick="toggleEraser()">🧹 지우개</button>
+        <button class="btn-gray" id="soundBtn" onclick="toggleSound()">🔔 효과음 ON</button>
+        <button class="btn-gray" onclick="clearCanvas()">🗑️ 전체 지우기</button>
+      </div>
+    </div>
+
+    <!-- 오른쪽: 채팅 + 정답 입력 -->
+    <div>
+      <div id="teacherMonitor" class="card hidden" style="margin-bottom:10px;">
+        <h3>🖥️ 관리자 모니터</h3>
+        <div id="teacherMonitorContent" class="small">현재 출제 화면 상태를 모니터링합니다.</div>
+      </div>
+
+      <div class="chat-box" id="chatBox"></div>
+
+      <div id="drawerNotice" class="card hidden" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,#e8f5e1,#d4edd0);border-color:#5aac44;">
+        ✏️ 지금은 네가 그림을 그릴 차례야!
+      </div>
+
+      <div id="answerWrap" class="card" style="margin-top:10px;">
+        <div class="answer-row">
+          <input id="answerInput" maxlength="40" placeholder="💬 정답 입력" onkeydown="if(event.key==='Enter') submitAnswer()" />
+          <button class="btn-primary" onclick="submitAnswer()">전송</button>
+        </div>
+        <div class="small">🚫 욕설/성적 표현 일부는 자동 차단돼.</div>
+      </div>
+
+      <div id="teacherGameControls" class="card hidden" style="margin-top:10px;background:linear-gradient(135deg,#e8f5e1,#d4edd0);border-color:#5aac44;">
+        <div class="small">✅ 정답이 나오면 5초 뒤 자동으로 다음 라운드로 넘어갑니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-credit">🍀 Created by. 민프피</div>
+</div></section>
+
+<!-- ── 결과 ── -->
+<section class="screen" id="screenResult"><div class="wrap">
+  <h2>🏆 최종 결과!</h2>
+  <div id="resultList"></div>
+  <button class="btn-primary" onclick="backToLobby()">🏡 처음으로</button>
+  <div class="footer-credit">🍀 Created by. 민프피</div>
+</div></section>
+
+</div><!-- #app -->
+
+<!-- ── 규칙 오버레이 ── -->
+<div class="overlay hidden" id="rulesOverlay">
+  <div class="modal">
+    <h3>📋 게임 규칙 안내</h3>
+    <p>🎨 출제자는 그림으로만 제시어를 설명해요.</p>
+    <p>💬 다른 학생들은 정답을 입력해 맞혀요.</p>
+    <p>⏭️ 정답이나 시간 종료 후 자동으로 다음 라운드로 넘어가요.</p>
+    <div class="countdown"><span id="rulesCountdown">20</span>초 후 시작</div>
+  </div>
 </div>
 
-<div class="overlay hidden" id="rulesOverlay"><div class="modal"><h3>게임 규칙 안내</h3><p>1. 출제자는 그림으로만 제시어를 설명해요.</p><p>2. 다른 학생들은 정답을 입력해 맞혀요.</p><p>3. 정답이나 시간 종료 후 자동으로 다음 라운드로 넘어가요.</p><div class="countdown"><span id="rulesCountdown">20</span>초 후 시작</div></div></div>
-<div class="center-popup hidden" id="centerPopup"><div class="big" id="centerPopupTitle">정답!</div><div class="sub" id="centerPopupSub">민영 +10점</div></div>
+<!-- ── 센터 팝업 ── -->
+<div class="center-popup hidden" id="centerPopup">
+  <div class="big" id="centerPopupTitle">정답!</div>
+  <div class="sub" id="centerPopupSub">민영 +10점</div>
+</div>
 
+<!-- ── JS 로직 (원본 그대로) ── -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
@@ -60,7 +483,7 @@ import { getDatabase, ref, set, get, update, onValue, off, push, remove, onDisco
 
 const firebaseConfig={apiKey:'AIzaSyCO6d8xemPjvrd4_twdiouZ4vG-AlFiexo',authDomain:'drawdrawonthewall.firebaseapp.com',databaseURL:'https://drawdrawonthewall-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'drawdrawonthewall',storageBucket:'drawdrawonthewall.firebasestorage.app',messagingSenderId:'843622460328',appId:'1:843622460328:web:64e4cb2c8760a9e00d8b9d'};
 const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); const APP_VERSION='v3';
-const COLORS=['#222222','#e63946','#ff6b35','#f4a261','#f4d35e','#2a9d8f','#457b9d','#9b5de5'],DEFAULT_WORDS=['사과','고양이','학교','축구공','비행기','나비','수박','로봇'];
+const COLORS=['#f0f0e0','#e63946','#ff6b35','#f4a261','#f4d35e','#2a9d8f','#457b9d','#9b5de5'],DEFAULT_WORDS=['사과','고양이','학교','축구공','비행기','나비','수박','로봇'];
 const BANNED_PATTERNS=[/씨발|시발|쉬발|쉬벌|시벌|십팔|ㅅㅂ|ㅆㅂ|ㅅ\s*ㅂ/i,/병신|븅신|ㅂㅅ|ㅂ\s*ㅅ/i,/미친|ㅁㅊ|ㅁ\s*ㅊ|지랄|염병|개새|꺼져|존나|좆|좇/i,/섹스|ㅅㅅ|성기|자지|보지|야동|포르노|딸딸|음경|질|애무|가슴빨/i,/fuck|f\s*u\s*c\s*k|shit|bitch|sex|porn|dick|pussy/i,/보\s*지|자\s*지|씨\s*발|시\s*발|병\s*신/i,/[ㅂㅈ]{2,}|[ㅈㄹ]{2,}|[ㅅㅂ]{2,}/i];
 let myId=localStorage.getItem('gm_uid'); if(!myId){myId='u_'+Math.random().toString(36).slice(2,11);localStorage.setItem('gm_uid',myId)}
 let myName='',myRole='',roomCode='',roomRef,playersRef,gameRef,chatRef,canvasRef,settingsRef,timerInterval=null,listeners={},canvasEventsBound=false,isDrawer=false,drawing=false,erasing=false,brushSize=8,brushColor=COLORS[0],undoStack=[],nextRoundScheduled=false,lastCelebrationKey='',currentRoundSeen=0,rulesCountdownTimer=null,audioCtx=null,soundEnabled=true,rulesShownForRoom=false,lastWrongPopupKey='',lastDrawerTurnKey='';
@@ -70,7 +493,7 @@ window.selectRole=selectRole;window.showScreen=showScreen;window.createRoom=crea
 async function ensureAnonymousAuth(){try{if(!auth.currentUser)await signInAnonymously(auth);myId=auth.currentUser?.uid||myId;localStorage.setItem('gm_uid',myId)}catch(e){console.error(e);alert('익명 로그인에 실패했어. Firebase Authentication > Anonymous 설정을 확인해줘.')}}
 function showScreen(id){document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function toast(msg){alert(msg)} function todayKey(){return new Date().toISOString().slice(0,10).replace(/-/g,'')}
-function showCenterPopup(title,sub,ms=2200,tone='success'){const p=document.getElementById('centerPopup'),t=document.getElementById('centerPopupTitle'),s=document.getElementById('centerPopupSub');t.textContent=title;s.textContent=sub;p.style.borderColor=tone==='fail'?'#e63946':'#ff6b35';t.style.color=tone==='fail'?'#e63946':'#ff6b35';p.classList.remove('hidden');setTimeout(()=>p.classList.add('hidden'),ms)}
+function showCenterPopup(title,sub,ms=2200,tone='success'){const p=document.getElementById('centerPopup'),t=document.getElementById('centerPopupTitle'),s=document.getElementById('centerPopupSub');t.textContent=title;s.textContent=sub;p.style.borderColor=tone==='fail'?'#e63946':'#ff8c42';t.style.color=tone==='fail'?'#e63946':'#ff8c42';p.classList.remove('hidden');setTimeout(()=>p.classList.add('hidden'),ms)}
 function ensureAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{})}
 function playTone(freq=660,duration=.12,type='sine',gainValue=.05){if(!soundEnabled)return; try{ensureAudio(); const osc=audioCtx.createOscillator(),gain=audioCtx.createGain(); osc.type=type;osc.frequency.value=freq;gain.gain.value=gainValue;osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+duration)}catch(e){console.error(e)}}
 function playCorrectSound(){playTone(660,.08,'triangle',.04);setTimeout(()=>playTone(880,.1,'triangle',.04),90);setTimeout(()=>playTone(1040,.12,'triangle',.04),200)}
@@ -106,7 +529,7 @@ async function enterWaiting(){detachAllListeners();showScreen('screenWaiting');d
 async function startGame(){await update(roomRef,{status:'playing'}); const [playersSnap,settingsSnap]=await Promise.all([get(playersRef),get(settingsRef)]);const players=playersSnap.val()||{};window.__playersCache=players;const settings=settingsSnap.val()||{};const drawerId=getNextDrawer(players,[]),keyword=(settings.words||DEFAULT_WORDS)[0]||DEFAULT_WORDS[0];await update(gameRef,{status:'playing',round:1,totalRounds:settings.roundCount,drawerId,keyword,timeLimit:settings.timeLimit,timerStart:Date.now(),answeredBy:'',usedWords:[keyword],usedDrawers:drawerId?[drawerId]:[],roundOver:false});if(drawerId)await runTransaction(ref(db,`rooms/${roomCode}/players/${drawerId}/drawCount`),v=>(v||0)+1);await set(canvasRef,{data:'',ts:Date.now()});await remove(chatRef);lastCelebrationKey='';currentRoundSeen=0}
 function enterGame(){detachAllListeners();showScreen('screenGame');document.getElementById('gameRoomCode').textContent=roomCode;setupCanvas();addListener('game_state',gameRef,async snap=>{const g=snap.val();if(!g)return;if(g.status==='result')return showResult();const playersSnap=await get(playersRef),players=playersSnap.val()||{};window.__playersCache=players;isDrawer=g.drawerId===myId;document.getElementById('curRound').textContent=g.round||0;document.getElementById('totalRound').textContent=g.totalRounds||0;document.getElementById('drawerNameDisplay').textContent=players[g.drawerId]?.name||'-';document.getElementById('drawerNameMini').textContent=players[g.drawerId]?.name||'-';document.getElementById('keywordDisplay').textContent=isDrawer?(g.keyword||''):'비밀';document.getElementById('wordBanner').classList.toggle('hidden',!isDrawer);document.getElementById('drawerNotice').classList.toggle('hidden',!isDrawer);document.getElementById('answerWrap').classList.toggle('hidden',isDrawer);document.getElementById('teacherGameControls').classList.toggle('hidden',myRole!=='teacher');document.getElementById('teacherMonitor').classList.toggle('hidden',myRole!=='teacher');if(myRole==='teacher'){const mon=document.getElementById('teacherMonitorContent');mon.innerHTML=`<strong>현재 출제자:</strong> ${players[g.drawerId]?.name||'-'}<br><strong>현재 라운드:</strong> ${g.round||0} / ${g.totalRounds||0}<br><strong>상태:</strong> ${g.roundOver?'정답 처리 중':'진행 중'}`}if(g.round!==currentRoundSeen){currentRoundSeen=g.round||0;ctx.clearRect(0,0,canvas.width,canvas.height);undoStack=[]}const drawerTurnKey=`${g.round}-${g.drawerId||''}`;if(isDrawer&&drawerTurnKey&&lastDrawerTurnKey!==drawerTurnKey){lastDrawerTurnKey=drawerTurnKey;showCenterPopup('당신이 그릴 차례입니다!!','3초 동안 준비하고 그림을 시작하세요!',3000,'success')}const scoreBoard=document.getElementById('scoreBoard');scoreBoard.innerHTML='';Object.entries(players).filter(([,p])=>p.role==='student').forEach(([uid,p])=>{const item=document.createElement('div');item.className='score-item';item.textContent=`${p.name}: ${p.score||0}점 / 정답 ${p.correctCount||0}회 / 출제 ${p.drawCount||0}회`;scoreBoard.appendChild(item)});const celebrationKey=`${g.round}-${g.answeredBy||''}`;if(g.roundOver&&g.answeredBy&&lastCelebrationKey!==celebrationKey){lastCelebrationKey=celebrationKey;const winnerName=players[g.answeredBy]?.name||'어떤 학생';showCenterPopup('정답입니다!!',`${winnerName} +10점 획득!!`,3000,'success');playCorrectSound()}if(myRole==='teacher'&&g.roundOver&&g.answeredBy&&!nextRoundScheduled){nextRoundScheduled=true;setTimeout(async()=>{nextRoundScheduled=false;const latest=await get(gameRef),latestGame=latest.val();if(latestGame&&latestGame.roundOver&&latestGame.answeredBy)await nextRound()},5000)}if(g.round===1&&!g.roundOver&&!rulesShownForRoom)showRulesOverlay();startTimer(g.timerStart,g.timeLimit,g.roundOver)});addListener('game_chat',chatRef,async snap=>{const box=document.getElementById('chatBox');box.innerHTML='';const msgs=snap.val()||{};const msgList=Object.entries(msgs).map(([id,msg])=>({id,...msg})).sort((a,b)=>(a.ts||0)-(b.ts||0));msgList.forEach(msg=>{const div=document.createElement('div');div.className='msg'+(msg.system?' system':'')+(msg.correct?' correct':'');if(msg.system)div.textContent=msg.text;else div.innerHTML=`<span class="name">${msg.name}</span>: ${msg.text}`;box.appendChild(div)});box.scrollTop=box.scrollHeight;if(myRole==='teacher')await processCorrectAnswerFromChat(msgList)});addListener('game_canvas',canvasRef,snap=>{if(isDrawer)return;const data=snap.val();if(!data?.data){ctx.clearRect(0,0,canvas.width,canvas.height);return}const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0)};img.src=data.data})}
 async function processCorrectAnswerFromChat(msgList){const gameSnap=await get(gameRef),g=gameSnap.val();if(!g||g.roundOver||!g.keyword)return;const candidate=msgList.find(msg=>!msg.system&&(msg.round===g.round)&&(msg.isCorrectGuess===true||String(msg.text||'').toLowerCase()===String(g.keyword||'').toLowerCase()));if(!candidate)return;const answerRef=ref(db,`rooms/${roomCode}/game/answeredBy`);let won=false;await runTransaction(answerRef,current=>{if(!current){won=true;return candidate.uid||''}return current});if(!won)return;await Promise.all([runTransaction(ref(db,`rooms/${roomCode}/players/${candidate.uid}/score`),v=>(v||0)+10),runTransaction(ref(db,`rooms/${roomCode}/players/${candidate.uid}/correctCount`),v=>(v||0)+1),runTransaction(ref(db,`rooms/${roomCode}/players/${g.drawerId}/score`),v=>(v||0)+5),update(gameRef,{roundOver:true}),update(ref(db,`rooms/${roomCode}/chat/${candidate.id}`),{correct:true}),addSystemChat(`정답입니다! ${candidate.name} +10점 / 출제자 +5점`)])}
-function startTimer(startTs,limit,roundOver){if(timerInterval)clearInterval(timerInterval);const display=document.getElementById('timerDisplay');if(roundOver){display.textContent='정답!';return}timerInterval=setInterval(async()=>{const remain=Math.max(0,limit-Math.floor((Date.now()-startTs)/1000));const m=Math.floor(remain/60).toString().padStart(2,'0'),s=(remain%60).toString().padStart(2,'0');display.textContent=`${m}:${s}`;if(remain===0){clearInterval(timerInterval);if(myRole==='teacher'){const gameSnap=await get(gameRef),g=gameSnap.val();if(g&&!g.roundOver){showCenterPopup('아쉽게 실패!',`정답은 "${g.keyword}" · 다음 라운드로 이동`,3000,'fail');playFailSound();await addSystemChat(`⏰ 시간 종료! 정답은 "${g.keyword}"`);setTimeout(async()=>{await nextRound()},3000)}}}},500)}
+function startTimer(startTs,limit,roundOver){if(timerInterval)clearInterval(timerInterval);const display=document.getElementById('timerDisplay');if(roundOver){display.textContent='정답! 🎉';return}timerInterval=setInterval(async()=>{const remain=Math.max(0,limit-Math.floor((Date.now()-startTs)/1000));const m=Math.floor(remain/60).toString().padStart(2,'0'),s=(remain%60).toString().padStart(2,'0');display.textContent=`${m}:${s}`;if(remain===0){clearInterval(timerInterval);if(myRole==='teacher'){const gameSnap=await get(gameRef),g=gameSnap.val();if(g&&!g.roundOver){showCenterPopup('아쉽게 실패!',`정답은 "${g.keyword}" · 다음 라운드로 이동`,3000,'fail');playFailSound();await addSystemChat(`⏰ 시간 종료! 정답은 "${g.keyword}"`);setTimeout(async()=>{await nextRound()},3000)}}}},500)}
 async function addSystemChat(text){await push(chatRef,{system:true,text,ts:Date.now()})}
 async function submitAnswer(){const input=document.getElementById('answerInput'),raw=input.value,answer=sanitizeAnswer(raw);input.value='';if(!answer||isDrawer)return;if(containsBannedWord(answer))return toast('이 표현은 입력할 수 없어.');const gameSnap=await get(gameRef),g=gameSnap.val();if(!g||g.roundOver)return;const isCorrect=answer.toLowerCase()==String(g.keyword||'').toLowerCase();await push(chatRef,{uid:myId,name:myName,text:answer,ts:Date.now(),round:g.round,isCorrectGuess:isCorrect});if(!isCorrect){const wrongKey=`${g.round}-${myId}-${answer}`;if(lastWrongPopupKey!==wrongKey){lastWrongPopupKey=wrongKey;showCenterPopup('오답입니다!!','다시 도전하세요!!',1800,'fail');playFailSound()}}}
 async function nextRound(){
@@ -119,38 +542,26 @@ const usedWords=g.usedWords||[],
 wordPool=(settings.words||DEFAULT_WORDS).filter(w=>!usedWords.includes(w)),
 actualPool=wordPool.length?wordPool:(settings.words||DEFAULT_WORDS),
 nextWord=actualPool[Math.floor(Math.random()*actualPool.length)];
-
 const students=Object.entries(players).filter(([,p])=>p.role==='student').map(([uid])=>uid);
 let usedDrawers=g.usedDrawers||[];
 const everyoneDone=students.length>0 && students.every(uid=>usedDrawers.includes(uid));
 if(everyoneDone){ usedDrawers=[]; }
-
 const nextDrawer=getNextDrawer(players,usedDrawers);
 const nextUsedDrawers=nextDrawer?[...usedDrawers,nextDrawer]:usedDrawers;
-
-await update(gameRef,{
-round:g.round+1,
-drawerId:nextDrawer||'',
-keyword:nextWord,
-timerStart:Date.now(),
-answeredBy:'',
-roundOver:false,
-usedWords:[...usedWords,nextWord],
-usedDrawers:nextUsedDrawers
-});
+await update(gameRef,{round:g.round+1,drawerId:nextDrawer||'',keyword:nextWord,timerStart:Date.now(),answeredBy:'',roundOver:false,usedWords:[...usedWords,nextWord],usedDrawers:nextUsedDrawers});
 if(nextDrawer)await runTransaction(ref(db,`rooms/${roomCode}/players/${nextDrawer}/drawCount`),v=>(v||0)+1);
 await set(canvasRef,{data:'',ts:Date.now()});
 await remove(chatRef);
 lastCelebrationKey='';
 }
 function renderPalette(){const palette=document.getElementById('colorPalette');palette.innerHTML='';COLORS.forEach(color=>{const dot=document.createElement('div');dot.className='color-dot'+(color===brushColor?' active':'');dot.style.background=color;dot.onclick=()=>{brushColor=color;erasing=false;renderPalette()};palette.appendChild(dot)})}
-function setupCanvas(){if(canvasEventsBound)return;canvasEventsBound=true;renderPalette();let lastX=0,lastY=0;const pos=e=>{const rect=canvas.getBoundingClientRect(),scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height,src=e.touches?e.touches[0]:e;return{x:(src.clientX-rect.left)*scaleX,y:(src.clientY-rect.top)*scaleY}};const start=e=>{if(!isDrawer)return;e.preventDefault();saveUndoState();drawing=true;const p=pos(e);lastX=p.x;lastY=p.y};const move=e=>{if(!drawing||!isDrawer)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.strokeStyle=erasing?'#ffffff':brushColor;ctx.lineWidth=erasing?brushSize*3:brushSize;ctx.lineCap='round';ctx.stroke();lastX=p.x;lastY=p.y;if(!window.__canvasThrottle){window.__canvasThrottle=setTimeout(()=>{set(canvasRef,{data:canvas.toDataURL(),ts:Date.now()});window.__canvasThrottle=null},100)}};const end=()=>{drawing=false};canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end)}
+function setupCanvas(){if(canvasEventsBound)return;canvasEventsBound=true;renderPalette();let lastX=0,lastY=0;const pos=e=>{const rect=canvas.getBoundingClientRect(),scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height,src=e.touches?e.touches[0]:e;return{x:(src.clientX-rect.left)*scaleX,y:(src.clientY-rect.top)*scaleY}};const start=e=>{if(!isDrawer)return;e.preventDefault();saveUndoState();drawing=true;const p=pos(e);lastX=p.x;lastY=p.y};const move=e=>{if(!drawing||!isDrawer)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.strokeStyle=erasing?'#2d5a27':brushColor;ctx.lineWidth=erasing?brushSize*3:brushSize;ctx.lineCap='round';ctx.stroke();lastX=p.x;lastY=p.y;if(!window.__canvasThrottle){window.__canvasThrottle=setTimeout(()=>{set(canvasRef,{data:canvas.toDataURL(),ts:Date.now()});window.__canvasThrottle=null},100)}};const end=()=>{drawing=false};canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end)}
 function saveUndoState(){try{undoStack.push(canvas.toDataURL());if(undoStack.length>20)undoStack.shift()}catch(e){console.error(e)}}
 function undoCanvas(){if(!isDrawer||!undoStack.length)return;const prev=undoStack.pop(),img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);if(canvasRef)set(canvasRef,{data:canvas.toDataURL(),ts:Date.now()})};img.src=prev}
 function clearCanvas(){if(isDrawer)saveUndoState();ctx.clearRect(0,0,canvas.width,canvas.height);if(canvasRef)set(canvasRef,{data:'',ts:Date.now()})}
-function toggleEraser(){erasing=!erasing;document.getElementById('eraserBtn').textContent=erasing?'지우개 ON':'지우개'}
-function toggleSound(){soundEnabled=!soundEnabled;const btn=document.getElementById('soundBtn');if(btn)btn.textContent=soundEnabled?'효과음 ON':'효과음 OFF'}
-async function showResult(){if(timerInterval)clearInterval(timerInterval);detachAllListeners();showScreen('screenResult');const playersSnap=await get(playersRef),players=playersSnap.val()||{},students=Object.values(players).filter(p=>p.role==='student'),medals=['🥇','🥈','🥉'];const list=document.getElementById('resultList');list.innerHTML='<h3>개인 TOP 3</h3>';const ranked=[...students].sort((a,b)=>(b.score||0)-(a.score||0));ranked.slice(0,3).forEach((p,idx)=>{const div=document.createElement('div');div.className='result-item';div.innerHTML=`<div>${medals[idx]||`${idx+1}위`} ${p.name}</div><div>${p.score||0}점</div>`;list.appendChild(div)});const awardTitle=document.createElement('h3');awardTitle.style.marginTop='18px';awardTitle.textContent='칭찬 타이틀';list.appendChild(awardTitle);const byCorrect=[...students].sort((a,b)=>(b.correctCount||0)-(a.correctCount||0)),byDraw=[...students].sort((a,b)=>(b.drawCount||0)-(a.drawCount||0));const badgeLine=document.createElement('div');badgeLine.className='badge-line';[{title:'정답왕',name:byCorrect[0]?.name||'-',value:`${byCorrect[0]?.correctCount||0}회 정답`},{title:'그림왕',name:byDraw[0]?.name||'-',value:`${byDraw[0]?.drawCount||0}회 출제`},{title:'개인 TOP 1',name:ranked[0]?.name||'-',value:`${ranked[0]?.score||0}점`}].forEach(a=>{const card=document.createElement('div');card.className='badge-card';card.innerHTML=`<strong>${a.title}</strong><br>${a.name}<br><span class="small">${a.value}</span>`;badgeLine.appendChild(card)});list.appendChild(badgeLine)}
+function toggleEraser(){erasing=!erasing;document.getElementById('eraserBtn').textContent=erasing?'🧹 지우개 ON':'🧹 지우개'}
+function toggleSound(){soundEnabled=!soundEnabled;const btn=document.getElementById('soundBtn');if(btn)btn.textContent=soundEnabled?'🔔 효과음 ON':'🔕 효과음 OFF'}
+async function showResult(){if(timerInterval)clearInterval(timerInterval);detachAllListeners();showScreen('screenResult');const playersSnap=await get(playersRef),players=playersSnap.val()||{},students=Object.values(players).filter(p=>p.role==='student'),medals=['🥇','🥈','🥉'];const list=document.getElementById('resultList');list.innerHTML='<h3>🏅 개인 TOP 3</h3>';const ranked=[...students].sort((a,b)=>(b.score||0)-(a.score||0));ranked.slice(0,3).forEach((p,idx)=>{const div=document.createElement('div');div.className='result-item';div.innerHTML=`<div>${medals[idx]||`${idx+1}위`} ${p.name}</div><div>${p.score||0}점</div>`;list.appendChild(div)});const awardTitle=document.createElement('h3');awardTitle.style.marginTop='20px';awardTitle.textContent='🌟 칭찬 타이틀';list.appendChild(awardTitle);const byCorrect=[...students].sort((a,b)=>(b.correctCount||0)-(a.correctCount||0)),byDraw=[...students].sort((a,b)=>(b.drawCount||0)-(a.drawCount||0));const badgeLine=document.createElement('div');badgeLine.className='badge-line';[{title:'🎯 정답왕',name:byCorrect[0]?.name||'-',value:`${byCorrect[0]?.correctCount||0}회 정답`},{title:'🎨 그림왕',name:byDraw[0]?.name||'-',value:`${byDraw[0]?.drawCount||0}회 출제`},{title:'👑 종합 1위',name:ranked[0]?.name||'-',value:`${ranked[0]?.score||0}점`}].forEach(a=>{const card=document.createElement('div');card.className='badge-card';card.innerHTML=`<strong>${a.title}</strong><br>${a.name}<br><span class="small">${a.value}</span>`;badgeLine.appendChild(card)});list.appendChild(badgeLine)}
 async function backToLobby(){
 detachAllListeners();
 if(timerInterval)clearInterval(timerInterval);
