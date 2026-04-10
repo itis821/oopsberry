@@ -1,0 +1,643 @@
+/* ── 기본 리셋 & 폰트 ── */
+* {
+  box-sizing: border-box
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #3d2c1e;
+  font-family: 'Noto Sans KR', sans-serif
+}
+
+body {
+  min-height: 100vh;
+  background: #f0f7e6 url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b5d99c' fill-opacity='0.25'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
+}
+
+/* ── 화면 공통 ── */
+.screen {
+  display: none;
+  min-height: 100vh;
+  padding: 18px
+}
+
+.screen.active {
+  display: block
+}
+
+.wrap {
+  max-width: 1280px;
+  margin: 0 auto
+}
+
+/* ── 나무 질감 카드 ── */
+.card {
+  background: linear-gradient(160deg, #fffdf4 0%, #fdf3dc 100%);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 6px 0 #c9a96e, 0 8px 24px rgba(0, 0, 0, .13);
+  border: 2.5px solid #d4aa70;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+/* ── 제목 ── */
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  font-family: 'Jua', sans-serif
+}
+
+h1 {
+  font-size: 2.6em;
+  color: #4a7c3f;
+  text-shadow: 2px 3px 0 #b5d99c
+}
+
+h2 {
+  font-size: 1.7em;
+  color: #5c3d1e;
+  border-bottom: 3px dashed #d4aa70;
+  padding-bottom: 8px;
+  margin-bottom: 16px
+}
+
+h3 {
+  font-size: 1.2em;
+  color: #5c3d1e
+}
+
+/* ── 입력 요소 ── */
+button,
+input,
+select,
+textarea {
+  font: inherit
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 2.5px solid #c9a96e;
+  background: #fffdf4;
+  margin-bottom: 10px;
+  font-size: 1em;
+  color: #3d2c1e;
+  transition: border .2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4a7c3f;
+  background: #f6fff0
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical
+}
+
+/* ── 버튼 ── */
+button {
+  border: none;
+  border-radius: 50px;
+  padding: 14px 22px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: 'Jua', sans-serif;
+  font-size: 1em;
+  letter-spacing: .5px;
+  transition: transform .12s, box-shadow .12s;
+  position: relative;
+  top: 0;
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: none !important
+}
+
+.btn-primary {
+  background: #ff8c42;
+  color: #fff;
+  box-shadow: 0 5px 0 #c45e1a
+}
+
+.btn-secondary {
+  background: #5bbfb5;
+  color: #fff;
+  box-shadow: 0 5px 0 #3a8a82
+}
+
+.btn-gray {
+  background: #d9c9a3;
+  color: #5c3d1e;
+  box-shadow: 0 5px 0 #b0996a
+}
+
+.btn-green {
+  background: #5aac44;
+  color: #fff;
+  box-shadow: 0 5px 0 #3a7a2c
+}
+
+/* ── 그리드 ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px
+}
+
+/* ── 역할 버튼 ── */
+.role-buttons {
+  display: grid;
+  gap: 12px;
+  max-width: 460px
+}
+
+.role-buttons button {
+  padding: 20px;
+  font-size: 1.2em
+}
+
+/* ── 방 코드 ── */
+.room-code {
+  font-size: 46px;
+  letter-spacing: 10px;
+  font-weight: 800;
+  font-family: 'Jua', sans-serif;
+  text-align: center;
+  color: #fff;
+  background: #4a7c3f;
+  border-radius: 18px;
+  padding: 16px 24px;
+  box-shadow: 0 6px 0 #2f5228, inset 0 2px 6px rgba(255, 255, 255, .15);
+  text-shadow: 2px 2px 0 #2f5228;
+  letter-spacing: 12px;
+}
+
+/* ── 칩/배지 ── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px
+}
+
+.chip {
+  background: #fff;
+  border: 2px solid #d4aa70;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: .95em;
+  font-weight: 700;
+  color: #5c3d1e;
+  box-shadow: 0 3px 0 #c9a96e;
+}
+
+.chip.me {
+  background: #ff8c42;
+  border-color: #c45e1a;
+  color: #fff;
+  box-shadow: 0 3px 0 #c45e1a
+}
+
+/* ── 게임 레이아웃 ── */
+.game-layout {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 14px;
+  align-items: start
+}
+
+/* ── 칠판 캔버스 ── */
+canvas {
+  width: 100%;
+  background: #2d5a27;
+  border-radius: 18px;
+  box-shadow: 0 0 0 10px #5c3d1e, 0 0 0 13px #8b6343, 0 12px 30px rgba(0, 0, 0, .25);
+  touch-action: none;
+  min-height: 420px;
+  display: block;
+}
+
+/* ── 툴바 (분필 느낌) ── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #f5e6c8, #ede0c4);
+  border-radius: 16px;
+  padding: 12px 14px;
+  border: 2px solid #c9a96e;
+  box-shadow: 0 4px 0 #b0996a;
+}
+
+.color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+  transition: transform .12s;
+}
+
+.color-dot:hover {
+  transform: scale(1.15)
+}
+
+.color-dot.active {
+  border-color: #3d2c1e;
+  transform: scale(1.2)
+}
+
+/* ── 채팅박스 (칠판 노트 느낌) ── */
+.chat-box {
+  height: 360px;
+  overflow: auto;
+  background: #fffdf4;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, .07);
+  border: 2.5px solid #d4aa70;
+  background-image: repeating-linear-gradient(transparent, transparent 31px, #f0e4c4 31px, #f0e4c4 32px);
+  background-attachment: local;
+}
+
+.msg {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  font-size: .95em
+}
+
+.msg .name {
+  font-weight: 700;
+  color: #4a7c3f;
+  font-family: 'Jua', sans-serif
+}
+
+.msg.system {
+  color: #8b7355;
+  font-style: italic;
+  font-size: .88em
+}
+
+.msg.correct {
+  background: linear-gradient(135deg, #fff9c4, #fff3aa);
+  border-radius: 10px;
+  padding: 6px 10px;
+  border-left: 4px solid #f4c430;
+  font-weight: 700;
+  color: #5c3d1e;
+}
+
+/* ── 정답 입력 ── */
+.answer-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px
+}
+
+.answer-row input {
+  margin-bottom: 0;
+  font-size: 1.05em
+}
+
+/* ── 점수판 ── */
+.score-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px
+}
+
+.score-item {
+  background: #fff;
+  border: 2px solid #d4aa70;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: .9em;
+  font-weight: 700;
+  color: #5c3d1e;
+  box-shadow: 0 3px 0 #c9a96e;
+}
+
+/* ── 통계 ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px
+}
+
+.stat {
+  background: linear-gradient(160deg, #fffdf4, #fdf3dc);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 6px 0 #c9a96e, 0 8px 20px rgba(0, 0, 0, .1);
+  border: 2.5px solid #d4aa70;
+}
+
+.stat .num {
+  font-size: 2.4em;
+  font-weight: 800;
+  color: #ff8c42;
+  font-family: 'Jua', sans-serif
+}
+
+/* ── 배너 (제시어) ── */
+.banner {
+  background: linear-gradient(135deg, #e8f5e1, #d4edd0);
+  border: 2.5px solid #5aac44;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 0 #3a7a2c;
+}
+
+/* ── 헤더 카드 (게임 상단 정보) ── */
+#screenGame .card:first-child {
+  background: linear-gradient(135deg, #3d5a2c, #4a7c3f);
+  color: #fff;
+  border-color: #2f5228;
+  box-shadow: 0 6px 0 #1e3a1a;
+}
+
+#screenGame .card:first-child strong {
+  color: #b5e48c
+}
+
+#screenGame .card:first-child .score-item {
+  background: rgba(255, 255, 255, .15);
+  border-color: rgba(255, 255, 255, .3);
+  color: #fff;
+  box-shadow: none;
+}
+
+#timerDisplay {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.4em;
+  background: #ff8c42;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 10px;
+  box-shadow: 0 3px 0 #c45e1a;
+  display: inline-block;
+}
+
+/* ── 숨김 / 유틸 ── */
+.hidden {
+  display: none !important
+}
+
+.small {
+  font-size: .88em;
+  color: #8b7355;
+  margin-top: 4px
+}
+
+/* ── 결과 아이템 ── */
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #fffdf4, #fdf3dc);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 6px 0 #c9a96e;
+  border: 2.5px solid #d4aa70;
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1em;
+}
+
+/* ── 배지 라인 ── */
+.badge-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px
+}
+
+.badge-card {
+  background: linear-gradient(135deg, #fff9c4, #fff3aa);
+  border: 2.5px solid #f4c430;
+  border-radius: 16px;
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 180px;
+  box-shadow: 0 5px 0 #c9a200;
+  font-family: 'Jua', sans-serif;
+}
+
+/* ── 푸터 ── */
+.footer-credit {
+  text-align: center;
+  font-size: .8em;
+  color: #8b7355;
+  padding: 18px 0 8px
+}
+
+/* ── 오버레이 / 모달 ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 20, 10, .65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.overlay.hidden {
+  display: none
+}
+
+.modal {
+  background: linear-gradient(160deg, #fffdf4, #fdf3dc);
+  width: min(680px, 100%);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 8px 0 #c9a96e, 0 16px 40px rgba(0, 0, 0, .3);
+  border: 3px solid #d4aa70;
+}
+
+.modal h3 {
+  color: #4a7c3f;
+  font-size: 1.5em;
+  margin-bottom: 14px;
+  font-family: 'Jua', sans-serif
+}
+
+.modal p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+  color: #5c3d1e
+}
+
+.countdown {
+  font-size: 2em;
+  font-weight: 800;
+  color: #ff8c42;
+  text-align: center;
+  margin-top: 10px;
+  font-family: 'Jua', sans-serif
+}
+
+/* ── 팝업 ── */
+.center-popup {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  background: linear-gradient(160deg, #fffdf4, #fdf3dc);
+  border: 5px solid #ff8c42;
+  border-radius: 28px;
+  padding: 30px 36px;
+  min-width: 300px;
+  text-align: center;
+  box-shadow: 0 10px 0 #c45e1a, 0 18px 50px rgba(0, 0, 0, .3);
+  animation: popIn .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes popIn {
+  from {
+    transform: translate(-50%, -50%) scale(.7);
+    opacity: 0
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1
+  }
+}
+
+.center-popup.hidden {
+  display: none
+}
+
+.center-popup .big {
+  font-size: 2.2em;
+  font-weight: 800;
+  color: #ff8c42;
+  margin-bottom: 10px;
+  font-family: 'Jua', sans-serif
+}
+
+.center-popup .sub {
+  font-size: 1.1em;
+  color: #5c3d1e;
+  font-weight: 700
+}
+
+/* ── 로비 특별 스타일 ── */
+#screenLobby {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext y='50' font-size='40'%3E🌿%3C/text%3E%3C/svg%3E") left 10px top 10px/60px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext y='50' font-size='40'%3E🍎%3C/text%3E%3C/svg%3E") right 10px top 10px/60px no-repeat,
+    linear-gradient(180deg, #c8e6c9 0%, #f0f7e6 40%, #e8d5b0 100%);
+}
+
+#screenLobby .card {
+  text-align: center;
+  padding: 48px 28px;
+  background: linear-gradient(160deg, #fffdf4 0%, #fdf3dc 100%);
+  border: 3px solid #d4aa70;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* 칠판 느낌 타이틀 박스 */
+.lobby-board {
+  background: #2d5a27;
+  border-radius: 18px;
+  padding: 22px 28px;
+  box-shadow: 0 0 0 8px #5c3d1e, 0 0 0 11px #8b6343, 0 12px 30px rgba(0, 0, 0, .2);
+  margin-bottom: 28px;
+  display: inline-block;
+  width: 100%;
+}
+
+.lobby-board h1 {
+  color: #fff;
+  font-size: 2.8em;
+  margin: 0;
+  text-shadow: 2px 3px 0 #1a3a17
+}
+
+.lobby-board p {
+  color: #b5e48c;
+  font-family: 'Jua', sans-serif;
+  font-size: 1.3em;
+  margin: 8px 0 0
+}
+
+/* ── 대기실 방 코드 영역 ── */
+#screenWaiting .card {
+  text-align: center
+}
+
+/* ── 모바일 대응 ── */
+@media(max-width:900px) {
+
+  .grid-2,
+  .grid-4,
+  .game-layout,
+  .stats {
+    grid-template-columns: 1fr
+  }
+
+  .chat-box {
+    height: 220px
+  }
+
+  canvas {
+    min-height: 300px
+  }
+
+  h1 {
+    font-size: 2em
+  }
+
+  .room-code {
+    font-size: 32px
+  }
+}
+
+/* ── 교사 모니터 ── */
+#teacherMonitor {
+  background: linear-gradient(135deg, #e8f5e1, #d4edd0);
+  border-color: #5aac44
+}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar {
+  width: 8px
+}
+
+::-webkit-scrollbar-track {
+  background: #f0e4c4;
+  border-radius: 8px
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c9a96e;
+  border-radius: 8px
+}
